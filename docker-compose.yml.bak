@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tficms
+      POSTGRES_USER: tficmsuser
+      POSTGRES_PASSWORD: tficmspass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  redis:
+    image: redis:alpine
+  web:
+    build: .
+    volumes:
+      - .:/app
+      - ./media:/app/media
+      - ./static:/app/static
+    environment:
+      - DEBUG=0
+      - DJANGO_ALLOWED_HOSTS=localhost 127.0.0.1 [::1]
+      - SQL_ENGINE=django.db.backends.postgresql
+      - SQL_DATABASE=tficms
+      - SQL_USER=tficmsuser
+      - SQL_PASSWORD=tficmspass
+      - SQL_HOST=db
+      - SQL_PORT=5432
+      - SECRET_KEY=replace_this_in_prod
+      - CELERY_BROKER=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    ports:
+      - "8000:8000"
+  celery:
+    build: .
+    command: celery -A tfirms worker -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+  celery-beat:
+    build: .
+    command: celery -A tfirms beat -l info
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  postgres_data:

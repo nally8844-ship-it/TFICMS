@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+  <h2>Appointments</h2>
+  <a class="btn btn-success mb-2" href="{% url 'appointments:appointment_create' %}">+ New Appointment</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr><th>#</th><th>Patient</th><th>Doctor</th><th>Date/Time</th><th>Status</th><th>Queue</th></tr>
+    </thead>
+    <tbody>
+      {% for app in appointments %}
+      <tr>
+        <td>{{ app.id }}</td>
+        <td>{{ app.patient }}</td>
+        <td>{{ app.doctor }}</td>
+        <td>{{ app.scheduled_time }}</td>
+        <td>{{ app.get_status_display }}</td>
+        <td>{{ app.queue_number }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

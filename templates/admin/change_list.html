@@ -1,0 +1,32 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_list_filter %}
+
+{% block content_title %}
+    <h1 style="color: #667eea; font-weight: 700; margin-bottom: 20px;">
+        📋 {{ opts.verbose_name_plural|capfirst }}
+    </h1>
+{% endblock %}
+
+{% block search %}
+    {% search_form cl %}
+{% endblock %}
+
+{% block date_hierarchy %}
+    {% date_hierarchy cl %}
+{% endblock %}
+
+{% block filters %}
+    {% admin_list_filter cl %}
+{% endblock %}
+
+{% block result_list %}
+    <div class="module" style="margin: 20px; border-radius: 10px;">
+        {% result_list cl %}
+    </div>
+{% endblock %}
+
+{% block pagination %}
+    {% pagination cl %}
+{% endblock %}
+
+{% endblock %}

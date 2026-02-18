@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="container mt-4">
+  <h2>IVF Cycles</h2>
+  <a class="btn btn-success mb-2" href="{% url 'ivf:ivfcycle_create' %}">+ New Cycle</a>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th><th>Couple</th><th>Protocol</th><th>Status</th><th>Start</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for cycle in cycles %}
+      <tr>
+        <td>{{ cycle.id }}</td>
+        <td>{{ cycle.couple }}</td>
+        <td>{{ cycle.get_protocol_display }}</td>
+        <td>{{ cycle.get_status_display }}</td>
+        <td>{{ cycle.start_date }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

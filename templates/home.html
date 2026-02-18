@@ -1,0 +1,205 @@
+﻿{% extends "base.html" %}
+
+{% block title %}Dashboard - TFICMS{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <h1 style="color: #667eea; font-weight: 700;">📊 Dashboard</h1>
+            <p class="text-muted">Welcome back, <strong>{{ user.username }}</strong>!</p>
+        </div>
+        <div class="col-lg-4 text-end">
+            <p class="text-muted">{{ "now"|date:"l, F j, Y" }}</p>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-primary shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-primary text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Total Patients</div>
+                    <div class="h3 mb-0" style="color: #667eea; font-weight: 700;">{{ total_patients }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-success text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Today's Appointments</div>
+                    <div class="h3 mb-0" style="color: #48bb78; font-weight: 700;">{{ today_appointments }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-warning text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Total Invoices</div>
+                    <div class="h3 mb-0" style="color: #ecc94b; font-weight: 700;">{{ pending_invoices }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-danger text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Total Payments</div>
+                    <div class="h3 mb-0" style="color: #f56565; font-weight: 700;">{{ pending_payments }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second Row of Stats -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-info text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Total Staff</div>
+                    <div class="h3 mb-0" style="color: #4299e1; font-weight: 700;">{{ total_staff }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-success text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Available Drugs</div>
+                    <div class="h3 mb-0" style="color: #48bb78; font-weight: 700;">{{ available_drugs }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+            <div class="card shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-primary text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Quick Links</div>
+                    <div class="row">
+                        <div class="col-6">
+                            <a href="/admin/" class="btn btn-sm btn-primary">📋 Admin Panel</a>
+                        </div>
+                        <div class="col-6">
+                            <a href="/swagger/" class="btn btn-sm btn-info">📚 API Docs</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row">
+        <!-- Recent Appointments -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">📅 Recent Appointments</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_appointments %}
+                        <div class="list-group">
+                            {% for appointment in recent_appointments %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="font-weight-bold">{{ appointment.patient }}</small>
+                                        <small class="text-muted">{{ appointment.scheduled_time|date:"H:i" }}</small>
+                                    </div>
+                                    <small class="text-muted">{{ appointment.scheduled_time|date:"M d, Y" }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No recent appointments</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Invoices -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-warning text-white">
+                    <h6 class="m-0 font-weight-bold">💰 Recent Invoices</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_invoices %}
+                        <div class="list-group">
+                            {% for invoice in recent_invoices %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="font-weight-bold">Invoice #{{ invoice.id }}</small>
+                                    </div>
+                                    <small class="text-muted">Amount: Pending</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No recent invoices</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Payments -->
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow">
+                <div class="card-header bg-success text-white">
+                    <h6 class="m-0 font-weight-bold">✅ Recent Payments</h6>
+                </div>
+                <div class="card-body">
+                    {% if recent_payments %}
+                        <div class="list-group">
+                            {% for payment in recent_payments %}
+                                <div class="list-group-item">
+                                    <div class="d-flex justify-content-between">
+                                        <small class="font-weight-bold">Payment #{{ payment.id }}</small>
+                                        <small class="text-success">{{ payment.amount }}</small>
+                                    </div>
+                                    <small class="text-muted">{{ payment.date|date:"M d, Y" }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p class="text-muted text-center">No recent payments</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .border-left-primary {
+        border-left: 4px solid #667eea !important;
+    }
+    .border-left-success {
+        border-left: 4px solid #48bb78 !important;
+    }
+    .border-left-warning {
+        border-left: 4px solid #ecc94b !important;
+    }
+    .border-left-danger {
+        border-left: 4px solid #f56565 !important;
+    }
+    .border-left-info {
+        border-left: 4px solid #4299e1 !important;
+    }
+    .card {
+        transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15) !important;
+    }
+    .list-group-item {
+        border: 1px solid #e2e8f0;
+        padding: 10px;
+        margin-bottom: 8px;
+        border-radius: 4px;
+    }
+</style>
+{% endblock %}

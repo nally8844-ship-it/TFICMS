@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load static %}
+{% block content %}
+<div class="row">
+  <div class="col-lg-3"><div class="alert alert-info">Total Patients: {{ total_patients }}</div></div>
+  <div class="col-lg-3"><div class="alert alert-success">Today’s Appointments: {{ today_appointments }}</div></div>
+  <div class="col-lg-3"><div class="alert alert-warning">Revenue: {{ revenue }}</div></div>
+  <div class="col-lg-3"><div class="alert alert-danger">Active IVF Cycles: {{ cycles_active }}</div></div>
+</div>
+<!-- Add charts with Chart.js if needed -->
+{% endblock %}

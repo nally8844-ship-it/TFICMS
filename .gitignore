@@ -1,0 +1,7 @@
+gunicorn.ctl
+*.pyc
+__pycache__/
+.env
+media/
+staticfiles/
+db.sqlite3

@@ -5,3 +5,10 @@ __pycache__/
 media/
 staticfiles/
 db.sqlite3
+venv/
+.env
+__pycache__/
+*.pyc
+staticfiles/
+media/
+gunicorn.ctl

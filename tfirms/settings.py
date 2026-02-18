@@ -6,7 +6,7 @@ env = environ.Env(DEBUG=(bool, False))
 environ.Env.read_env(os.path.join(BASE_DIR, '.env'))
 
 DEBUG = env.bool('DEBUG')
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = env('SECRET_KEY', default='temporary-secret-key-123456')
 ALLOWED_HOSTS = [
     'localhost',
     '127.0.0.1',

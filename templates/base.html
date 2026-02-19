@@ -11,9 +11,15 @@
     <style>
         body {
             background-color: #f8f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
         .navbar {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 20px;
         }
         .card {
             box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
@@ -26,8 +32,8 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="/">
-                <strong>TFICMS</strong>
+            <a class="navbar-brand" href="{% url 'home' %}">
+                <strong>🏥 TFICMS</strong>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
@@ -36,14 +42,14 @@
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/admin/">Admin</a>
+                            <span class="nav-link">👤 {{ user.username }}</span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="/accounts/logout/">Logout ({{ user.username }})</a>
+                            <a class="nav-link" href="/admin/" style="font-weight: 600;">⚙️ Admin</a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="/accounts/login/">Login</a>
+                            <a class="nav-link" href="{% url 'login_portal' %}">🔐 Login</a>
                         </li>
                     {% endif %}
                 </ul>

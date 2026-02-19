@@ -1,0 +1,214 @@
+{% extends "admin/base_site.html" %}
+{% load static %}
+
+{% block title %}TFICMS Admin - Login{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: auto;
+            margin: 0;
+            padding: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            background-attachment: fixed !important;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        #container {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: visible;
+            height: auto;
+        }
+
+        #header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px 30px;
+            text-align: center;
+            border-radius: 16px 16px 0 0;
+        }
+
+        #header h1 {
+            font-size: 32px;
+            color: white;
+            margin: 0;
+            font-weight: 700;
+           text-align: center;
+        }
+
+        #content {
+            padding: 40px;
+            overflow: visible;
+        }
+
+        .form-row {
+            margin-bottom: 20px;
+        }
+
+        .form-row label {
+            display: block;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-row input[type="text"],
+        .form-row input[type="password"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        .form-row input[type="text"]:focus,
+        .form-row input[type="password"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-row {
+            margin: 30px 0 0 0;
+        }
+
+        .submit-row input {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-row input:hover {
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            transform: translateY(-2px);
+        }
+
+        .errorlist {
+            background: #fed7d7;
+            border: 2px solid #f56565;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 20px;
+            list-style: none;
+            color: #c53030;
+            font-weight: 500;
+        }
+
+        .errorlist li {
+            margin: 5px 0;
+        }
+
+        #footer {
+            background: #2d3748;
+            padding: 20px;
+            text-align: center;
+            color: #718096;
+            font-size: 12px;
+            border-top: 1px solid #667eea;
+        }
+
+        .login-form {
+            background: white;
+            padding: 0;
+        }
+    </style>
+{% endblock %}
+
+{% block content_title %}{% endblock %}
+
+{% block branding %}
+    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 30px; text-align: center; border-radius: 16px 16px 0 0;">
+        <h1 style="color: white; font-size: 32px; font-weight: 700; margin: 0;">
+            🏥 TFICMS
+        </h1>
+        <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">
+            Tunajali Fertility & IVF Clinic Management System
+        </p>
+        <p style="color: rgba(255,255,255,0.8); margin: 5px 0 0 0; font-size: 16px; font-weight: 600;">
+            Admin Login
+        </p>
+    </div>
+{% endblock %}
+
+{% block content %}
+    <div style="padding: 40px;">
+        {% if form.errors %}
+            <div class="errorlist">
+                <strong>❌ Login Failed</strong>
+                {% if form.errors.username %}
+                    <li>{{ form.errors.username.0 }}</li>
+                {% endif %}
+                {% if form.errors.password %}
+                    <li>{{ form.errors.password.0 }}</li>
+                {% endif %}
+                {% if form.non_field_errors %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        {% endif %}
+
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            
+            <div class="form-row">
+                <label for="id_username">👤 Username:</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-row">
+                <label for="id_password">🔐 Password:</label>
+                {{ form.password }}
+            </div>
+
+            <div class="submit-row">
+                <input type="submit" value="🔓 Login to Admin" />
+            </div>
+        </form>
+
+        <div style="text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+            <p class="text-muted" style="color: #718096; font-size: 14px;">
+                Go back to <a href="{% url 'home' %}" style="color: #667eea; text-decoration: none; font-weight: 600;">Home Page →</a>
+            </p>
+        </div>
+    </div>
+{% endblock %}
+
+{% block footer %}
+    <div style="background: #2d3748; color: white; padding: 20px; text-align: center;">
+        <p style="margin: 0; font-size: 12px;">
+            © 2026 Tunajali Fertility & IVF Clinic Management System. All rights reserved.
+        </p>
+    </div>
+{% endblock %}

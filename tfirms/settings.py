@@ -93,12 +93,12 @@ WSGI_APPLICATION = 'tfirms.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': env('SQL_ENGINE'),
-        'NAME': env('SQL_DATABASE'),
-        'USER': env('SQL_USER'),
-        'PASSWORD': env('SQL_PASSWORD'),
-        'HOST': env('SQL_HOST'),
-        'PORT': env('SQL_PORT'),
+        'ENGINE': env('SQL_ENGINE', default='django.db.backends.sqlite3'),
+        'NAME': env('SQL_DATABASE', default=str(BASE_DIR / 'db.sqlite3')),
+        'USER': env('SQL_USER', default=''),
+        'PASSWORD': env('SQL_PASSWORD', default=''),
+        'HOST': env('SQL_HOST', default=''),
+        'PORT': env('SQL_PORT', default=''),
     }
 }
 
@@ -118,5 +118,86 @@ REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
 
-CELERY_BROKER_URL = env('CELERY_BROKER')
-CELERY_RESULT_BACKEND = env('CELERY_BROKER')
+CELERY_BROKER_URL = env('CELERY_BROKER', default='redis://localhost:6379/0')
+CELERY_RESULT_BACKEND = env('CELERY_BROKER', default='redis://localhost:6379/0')
+
+# ==================== AUTHENTICATION ====================
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'admin-dashboard'  # This redirects to dashboard which shows departments
+LOGOUT_REDIRECT_URL = 'home'  # Go to home after logout
+
+# ==================== PASSWORD VALIDATION ====================
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+    },
+    {
+        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+    },
+]
+
+# ==================== SESSION SETTINGS ====================
+SESSION_COOKIE_AGE = 1209600  # 2 weeks
+SESSION_COOKIE_HTTPONLY = True
+SESSION_COOKIE_SECURE = False  # Set to True in production with HTTPS
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# ==================== CACHING ====================
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# ==================== TIME ZONE ====================
+TIME_ZONE = 'UTC'
+USE_TZ = True
+USE_I18N = True
+LANGUAGE_CODE = 'en-us'
+
+# ==================== LOGGING ====================
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+        'file': {
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'debug.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', 'file'],
+            'level': 'INFO',
+        },
+    },
+}
+
+# ==================== FILE UPLOAD ====================
+DATA_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5242880  # 5MB
+FILE_UPLOAD_PERMISSIONS = 0o644
+
+# ==================== SECURITY ====================
+SECURE_BROWSER_XSS_FILTER = True
+SECURE_CONTENT_TYPE_NOSNIFF = True
+X_FRAME_OPTIONS = 'DENY'
+CSRF_COOKIE_SECURE = False  # Set to True in production with HTTPS
+CSRF_COOKIE_HTTPONLY = True
+
+# ==================== ADMIN CUSTOMIZATION ====================
+ADMIN_URL = 'admin/'
+# Admin Login Settings
+ADMIN_SITE_HEADER = "TFICMS Administration"
+ADMIN_INDEX_TITLE = "Welcome to TFICMS Admin"
+ADMIN_SITE_TITLE = "TFICMS"

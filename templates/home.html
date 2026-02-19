@@ -15,7 +15,7 @@
         </div>
     </div>
 
-    <!-- Statistics Cards -->
+    <!-- Statistics Cards Row 1 -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-left-primary shadow h-100 py-2">
@@ -54,7 +54,7 @@
         </div>
     </div>
 
-    <!-- Second Row of Stats -->
+    <!-- Statistics Cards Row 2 - Staff by Department -->
     <div class="row mb-4">
         <div class="col-md-3 mb-3">
             <div class="card border-left-info shadow h-100 py-2">
@@ -68,23 +68,67 @@
         <div class="col-md-3 mb-3">
             <div class="card border-left-success shadow h-100 py-2">
                 <div class="card-body">
+                    <div class="text-success text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">🏥 Doctors</div>
+                    <div class="h3 mb-0" style="color: #48bb78; font-weight: 700;">{{ doctors }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-info shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-info text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">👩‍⚕️ Nurses</div>
+                    <div class="h3 mb-0" style="color: #4299e1; font-weight: 700;">{{ nurses }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-warning shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-warning text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">💊 Pharmacists</div>
+                    <div class="h3 mb-0" style="color: #ecc94b; font-weight: 700;">{{ pharmacists }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics Cards Row 3 - More Staff -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-danger shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-danger text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">🎫 Receptionists</div>
+                    <div class="h3 mb-0" style="color: #f56565; font-weight: 700;">{{ receptionists }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
+                    <div class="text-success text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">🔬 Lab Technicians</div>
+                    <div class="h3 mb-0" style="color: #48bb78; font-weight: 700;">{{ lab_technicians }}</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 mb-3">
+            <div class="card border-left-success shadow h-100 py-2">
+                <div class="card-body">
                     <div class="text-success text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Available Drugs</div>
                     <div class="h3 mb-0" style="color: #48bb78; font-weight: 700;">{{ available_drugs }}</div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-6 mb-3">
+        <div class="col-md-3 mb-3">
             <div class="card shadow h-100 py-2">
                 <div class="card-body">
                     <div class="text-primary text-uppercase mb-1" style="font-size: 12px; font-weight: 700;">Quick Links</div>
-                    <div class="row">
-                        <div class="col-6">
-                            <a href="/admin/" class="btn btn-sm btn-primary">📋 Admin Panel</a>
-                        </div>
-                        <div class="col-6">
-                            <a href="/swagger/" class="btn btn-sm btn-info">📚 API Docs</a>
-                        </div>
+                    <div>
+                        <a href="/admin/" class="btn btn-sm btn-primary mb-2 w-100">📋 Admin Panel</a>
+                        <a href="/swagger/" class="btn btn-sm btn-info w-100">📚 API Docs</a>
                     </div>
                 </div>
             </div>

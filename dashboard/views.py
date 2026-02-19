@@ -1,89 +1,124 @@
 import datetime
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from appointments.models import Appointment
-from patients.models import Patient
-from billing.models import Invoice, Payment
-from pharmacy.models import Drug
-from hr_payroll.models import StaffProfile
 
 
 @login_required
 def admin_dashboard(request):
     """
-    Dashboard view showing clinic statistics and recent activities
+    Dashboard view showing all 15 departments
     """
     
-    # Get today's date
-    today = datetime.date.today()
-    
-    try:
-        # Calculate statistics
-        total_patients = Patient.objects.count()
-        today_appointments = Appointment.objects.filter(
-            scheduled_time__date=today
-        ).count()
-        
-        # Get invoices count - Invoice model available fields
-        try:
-            pending_invoices = Invoice.objects.count()
-        except:
-            pending_invoices = 0
-        
-        # Get payments count - Payment has: amount, date, id, invoice, invoice_id, mode, notes
-        try:
-            recent_payments_list = Payment.objects.order_by('-date')[:5]
-            pending_payments = Payment.objects.count()
-        except:
-            recent_payments_list = []
-            pending_payments = 0
-        
-        # Get staff count
-        try:
-            total_staff = StaffProfile.objects.count()
-        except:
-            total_staff = 0
-        
-        # Get available drugs
-        try:
-            available_drugs = Drug.objects.filter(quantity__gt=0).count()
-        except:
-            available_drugs = 0
-        
-        # Get recent appointments (last 5)
-        try:
-            recent_appointments = Appointment.objects.order_by('-scheduled_time')[:5]
-        except:
-            recent_appointments = []
-        
-        # Get recent invoices (last 5)
-        try:
-            recent_invoices = Invoice.objects.order_by('-id')[:5]
-        except:
-            recent_invoices = []
-        
-    except Exception as e:
-        # If there are any errors, provide default values
-        total_patients = 0
-        today_appointments = 0
-        pending_invoices = 0
-        pending_payments = 0
-        total_staff = 0
-        available_drugs = 0
-        recent_appointments = []
-        recent_invoices = []
-        recent_payments_list = []
+    departments = [
+        {
+            'name': '🎫 Front Office / Reception',
+            'slug': 'reception',
+            'description': 'Patient entry & coordination center',
+            'color': '#667eea',
+            'url': '#',
+        },
+        {
+            'name': '🏥 Outpatient Department (OPD)',
+            'slug': 'opd',
+            'description': 'Clinical consultation & documentation',
+            'color': '#48bb78',
+            'url': '#',
+        },
+        {
+            'name': '🔍 Fertility Consultation Unit',
+            'slug': 'fertility',
+            'description': 'Infertility assessment & monitoring',
+            'color': '#ed8936',
+            'url': '#',
+        },
+        {
+            'name': '🧬 IVF & ART Department',
+            'slug': 'ivf',
+            'description': 'IVF cycle execution & management',
+            'color': '#9f7aea',
+            'url': '#',
+        },
+        {
+            'name': '🔬 Andrology Laboratory',
+            'slug': 'andrology',
+            'description': 'Male fertility diagnostics & sperm handling',
+            'color': '#3182ce',
+            'url': '#',
+        },
+        {
+            'name': '🥚 Embryology Laboratory',
+            'slug': 'embryology',
+            'description': 'Embryo development & cryostorage',
+            'color': '#e53e3e',
+            'url': '#',
+        },
+        {
+            'name': '📡 Ultrasound & Imaging Department',
+            'slug': 'ultrasound',
+            'description': 'Diagnostic imaging & monitoring',
+            'color': '#38b2ac',
+            'url': '#',
+        },
+        {
+            'name': '👩‍⚕️ Nursing Department',
+            'slug': 'nursing',
+            'description': 'Clinical support & patient care',
+            'color': '#f6ad55',
+            'url': '#',
+        },
+        {
+            'name': '💊 Pharmacy Department',
+            'slug': 'pharmacy',
+            'description': 'Drug & inventory management',
+            'color': '#ecc94b',
+            'url': '#',
+        },
+        {
+            'name': '💰 Finance & Billing Department',
+            'slug': 'billing',
+            'description': 'Revenue & financial management',
+            'color': '#48bb78',
+            'url': '#',
+        },
+        {
+            'name': '🧪 General Laboratory (Diagnostics)',
+            'slug': 'lab',
+            'description': 'Supporting medical testing',
+            'color': '#4299e1',
+            'url': '#',
+        },
+        {
+            'name': '💭 Counseling & Psychology Unit',
+            'slug': 'counseling',
+            'description': 'Emotional & psychological support',
+            'color': '#b19cd9',
+            'url': '#',
+        },
+        {
+            'name': '❄️ Cryobank Management',
+            'slug': 'cryobank',
+            'description': 'Gamete & embryo storage control',
+            'color': '#4fd1c5',
+            'url': '#',
+        },
+        {
+            'name': '👔 Human Resource (HR)',
+            'slug': 'hr',
+            'description': 'Staff & workforce management',
+            'color': '#fc8181',
+            'url': '#',
+        },
+        {
+            'name': '⚙️ Administration & Management',
+            'slug': 'admin',
+            'description': 'Oversight & performance monitoring',
+            'color': '#667eea',
+            'url': '#',
+        },
+    ]
     
     context = {
-        'total_patients': total_patients,
-        'today_appointments': today_appointments,
-        'pending_invoices': pending_invoices,
-        'pending_payments': pending_payments,
-        'total_staff': total_staff,
-        'available_drugs': available_drugs,
-        'recent_appointments': recent_appointments,
-        'recent_invoices': recent_invoices,
-        'recent_payments': recent_payments_list,
+        'departments': departments,
     }
     
-    return render(request, 'home.html', context)
+    return render(request, 'dashboard/departments.html', context)

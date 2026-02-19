@@ -1,0 +1,233 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - TFICMS{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="text-center mb-5">
+        <h1 style="color: #667eea; font-weight: 700; font-size: 36px;">🏥 TFICMS</h1>
+        <p style="color: #718096; font-size: 16px;">Tunajali Fertility & IVF Clinic Management System</p>
+        <hr style="max-width: 200px; margin: 30px auto; border: 2px solid #667eea;">
+        <h2 style="color: #2d3748; font-weight: 700;">🔐 Department Dashboard</h2>
+        <p class="text-muted">Select your department to access the system</p>
+    </div>
+
+    <div class="row">
+        <!-- 1. Reception -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🎫</div>
+                    <h5 class="card-title">Front Office</h5>
+                    <p class="card-text small text-muted">Patient entry & coordination</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. OPD -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🏥</div>
+                    <h5 class="card-title">OPD</h5>
+                    <p class="card-text small text-muted">Clinical consultation</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Fertility Consultation -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🔍</div>
+                    <h5 class="card-title">Fertility Unit</h5>
+                    <p class="card-text small text-muted">Infertility assessment</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #ed8936 0%, #d69e2e 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. IVF -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🧬</div>
+                    <h5 class="card-title">IVF & ART</h5>
+                    <p class="card-text small text-muted">IVF cycle management</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #9f7aea 0%, #6b46c1 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. Andrology Lab -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🔬</div>
+                    <h5 class="card-title">Andrology Lab</h5>
+                    <p class="card-text small text-muted">Male fertility diagnostics</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #3182ce 0%, #2c5282 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 6. Embryology Lab -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🥚</div>
+                    <h5 class="card-title">Embryology Lab</h5>
+                    <p class="card-text small text-muted">Embryo development</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 7. Ultrasound -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">📡</div>
+                    <h5 class="card-title">Ultrasound</h5>
+                    <p class="card-text small text-muted">Diagnostic imaging</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #38b2ac 0%, #2c7a7b 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 8. Nursing -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">👩‍⚕️</div>
+                    <h5 class="card-title">Nursing</h5>
+                    <p class="card-text small text-muted">Clinical support</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #f6ad55 0%, #ed8936 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 9. Pharmacy -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">💊</div>
+                    <h5 class="card-title">Pharmacy</h5>
+                    <p class="card-text small text-muted">Drug inventory</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #ecc94b 0%, #d69e2e 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 10. Billing -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">💰</div>
+                    <h5 class="card-title">Billing</h5>
+                    <p class="card-text small text-muted">Revenue management</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 11. General Lab -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🧪</div>
+                    <h5 class="card-title">General Lab</h5>
+                    <p class="card-text small text-muted">Medical testing</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #4299e1 0%, #2c5282 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 12. Counseling -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">💭</div>
+                    <h5 class="card-title">Counseling</h5>
+                    <p class="card-text small text-muted">Psychological support</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #b19cd9 0%, #9370db 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 13. Cryobank -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">❄️</div>
+                    <h5 class="card-title">Cryobank</h5>
+                    <p class="card-text small text-muted">Gamete storage</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #4fd1c5 0%, #38b2ac 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 14. HR -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">👔</div>
+                    <h5 class="card-title">HR</h5>
+                    <p class="card-text small text-muted">Staff management</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #fc8181 0%, #f56565 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 15. Administration -->
+        <div class="col-md-4 mb-4">
+            <div class="card dept-card h-100">
+                <div class="card-body py-4">
+                    <div style="font-size: 40px; margin-bottom: 10px;">⚙️</div>
+                    <h5 class="card-title">Administration</h5>
+                    <p class="card-text small text-muted">Oversight & monitoring</p>
+                    <a href="#" class="btn btn-sm w-100" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none;">Open</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel Link -->
+    <div class="row mt-5">
+        <div class="col-12 text-center">
+            <p class="text-muted" style="font-size: 16px;">
+                Are you an admin? <a href="/admin/" style="color: #667eea; text-decoration: none; font-weight: 600;">Go to Admin Panel →</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+    .dept-card {
+        border: none;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+        text-align: center;
+        border-top: 4px solid #667eea;
+    }
+
+    .dept-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    }
+
+    .dept-card .card-title {
+        color: #2d3748;
+        font-weight: 700;
+        margin: 10px 0 5px 0;
+        font-size: 16px;
+    }
+
+    .btn:hover {
+        transform: scale(1.05);
+    }
+</style>
+{% endblock %}

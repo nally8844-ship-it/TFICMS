@@ -1,5 +1,4 @@
-﻿{% extends "base.html" %}
-{% load static %}
+{% extends "base.html" %}
 
 {% block title %}Login - TFICMS{% endblock %}
 
@@ -9,62 +8,47 @@
         <div class="col-md-6">
             <div class="card" style="border-top: 4px solid #667eea; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);">
                 <div class="card-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px;">
-                    <h3 class="mb-0">🔐 TFICMS Login</h3>
+                    <h3 class="mb-0">🔐 {{ department }} Login</h3>
                 </div>
                 <div class="card-body p-5">
-                    {% if form.non_field_errors %}
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            <strong>Login Failed!</strong>
-                            {% for error in form.non_field_errors %}
-                                <div>{{ error }}</div>
-                            {% endfor %}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                        </div>
-                    {% endif %}
+
+         {% if error %}
+    <div style="background: linear-gradient(135deg, #fed7d7 0%, #fecaca 100%); border: 2px solid #f56565; border-radius: 12px; padding: 18px; margin-bottom: 25px; color: #c53030; font-weight: 600; box-shadow: 0 4px 15px rgba(245, 101, 101, 0.15); position: relative; padding-left: 45px;">
+        <span style="position: absolute; left: 15px; font-size: 22px;">⚠️</span>
+        <strong style="display: block; margin-bottom: 5px; font-size: 15px;">Access Denied</strong>
+        {{ error }}
+    </div>
+{% endif %}
 
                     <form method="post" novalidate>
                         {% csrf_token %}
 
                         <!-- Username Field -->
                         <div class="mb-4">
-                            <label for="id_username" class="form-label fw-bold">Username</label>
+                            <label for="username" class="form-label fw-bold">Username</label>
                             <input type="text" 
-                                   id="id_username" 
+                                   id="username" 
                                    name="username" 
                                    class="form-control form-control-lg"
                                    placeholder="Enter your username"
                                    required
                                    autofocus>
-                            {% if form.username.errors %}
-                                <div class="text-danger small mt-2">
-                                    {% for error in form.username.errors %}
-                                        <div>• {{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
                         </div>
 
                         <!-- Password Field -->
                         <div class="mb-4">
-                            <label for="id_password" class="form-label fw-bold">Password</label>
+                            <label for="password" class="form-label fw-bold">Password</label>
                             <input type="password" 
-                                   id="id_password" 
+                                   id="password" 
                                    name="password" 
                                    class="form-control form-control-lg"
                                    placeholder="Enter your password"
                                    required>
-                            {% if form.password.errors %}
-                                <div class="text-danger small mt-2">
-                                    {% for error in form.password.errors %}
-                                        <div>• {{ error }}</div>
-                                    {% endfor %}
-                                </div>
-                            {% endif %}
                         </div>
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary btn-lg w-100 py-3 fw-bold">
-                            Login to TFICMS
+                            Login
                         </button>
                     </form>
 
@@ -72,9 +56,9 @@
 
                     <!-- Links -->
                     <div class="text-center">
-                        <p class="text-muted mb-2">Want to use department login?</p>
+                        <p class="text-muted mb-2">Want to try a different department?</p>
                         <a href="{% url 'login_portal' %}" class="btn btn-outline-primary btn-sm">
-                            Go to Department Portal →
+                            Back to Department Portal →
                         </a>
                     </div>
                 </div>
@@ -98,15 +82,6 @@
         box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
     }
 
-    .form-control-lg::placeholder {
-        color: #cbd5e0;
-    }
-
-    .form-label {
-        color: #2d3748;
-        margin-bottom: 8px;
-    }
-
     .btn-primary {
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         border: none;
@@ -117,27 +92,6 @@
     .btn-primary:hover {
         box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
         transform: translateY(-2px);
-    }
-
-    .btn-outline-primary {
-        color: #667eea;
-        border-color: #667eea;
-    }
-
-    .btn-outline-primary:hover {
-        background-color: #667eea;
-        color: white;
-        border-color: #667eea;
-    }
-
-    .card {
-        border: none;
-        border-radius: 12px;
-    }
-
-    .card-header {
-        border-radius: 12px 12px 0 0;
-        border: none;
     }
 </style>
 {% endblock %}

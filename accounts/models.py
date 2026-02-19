@@ -1,30 +1,36 @@
-from django.contrib.auth.models import AbstractUser
 from django.db import models
-
-ROLES = [
-    ('superadmin', 'Super Admin'),
-    ('manager', 'Clinic Manager'),
-    ('receptionist', 'Receptionist'),
-    ('doctor', 'Doctor'),
-    ('nurse', 'Nurse'),
-    ('sonographer', 'Sonographer'),
-    ('andrology_tech', 'Andrology Lab Technician'),
-    ('embryology_tech', 'Embryology Lab Technician'),
-    ('pharmacist', 'Pharmacist'),
-    ('accountant', 'Accountant'),
-    ('hr', 'HR Officer'),
-    ('counselor', 'Counselor'),
-    ('cryobank', 'Cryobank Officer'),
-]
+from django.contrib.auth.models import AbstractUser
 
 class User(AbstractUser):
-    email = models.EmailField(unique=True)
-    role = models.CharField(max_length=32, choices=ROLES)
-    phone = models.CharField(max_length=20, blank=True)
+    DEPARTMENT_CHOICES = (
+        ('reception', '🎫 Front Office / Reception'),
+        ('opd', '🏥 Outpatient Department (OPD)'),
+        ('fertility_consultation', '🔍 Fertility Consultation Unit'),
+        ('ivf', '🧬 IVF & ART Department'),
+        ('andrology_lab', '🔬 Andrology Laboratory'),
+        ('embryology_lab', '🥚 Embryology Laboratory'),
+        ('ultrasound', '📡 Ultrasound & Imaging Department'),
+        ('nursing', '   ‍⚕️ Nursing Department'),
+        ('pharmacy', '💊 Pharmacy Department'),
+        ('billing', '💰 Finance & Billing Department'),
+        ('general_lab', '🧪 General Laboratory (Diagnostics)'),
+        ('counseling', '💭 Counseling & Psychology Unit'),
+        ('cryobank', '❄️ Cryobank Management'),
+        ('hr', '👔 Human Resource (HR)'),
+        ('admin', '⚙️ Administration & Management'),
+    )
+    
+    department = models.CharField(
+        max_length=50,
+        choices=DEPARTMENT_CHOICES,
+        default='reception'
+    )
+    phone = models.CharField(max_length=15, blank=True)
     is_active = models.BooleanField(default=True)
-
-    USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username']
-
+    
+    class Meta:
+        verbose_name = 'User'
+        verbose_name_plural = 'Users'
+    
     def __str__(self):
-        return f"{self.get_full_name()} ({self.get_role_display()})"
+        return f"{self.username} - {self.get_department_display()}"

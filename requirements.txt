@@ -1,1 +1,1 @@
-  r e f l u t t e r = = 0 . 8 . 6   
+reflutter==0.8.6Django==5.0.3djangorestframework==3.15.1gunicorn==21.2.0psycopg2-binary==2.9.9celery==5.3.6redis==5.0.1 

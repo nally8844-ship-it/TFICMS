@@ -1,0 +1,236 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFICMS - Tunajali Fertility & IVF Clinic Management System</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; display: flex; flex-direction: column; }
+        header { background: rgba(255, 255, 255, 0.98); padding: 20px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); position: sticky; top: 0; z-index: 100; }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .logo-text h1 { color: #333; font-size: 1.5em; margin: 0; font-weight: 700; }
+        .logo-text p { color: #666; font-size: 0.8em; margin: 5px 0 0 0; }
+        .container { max-width: 1200px; margin: 80px auto; padding: 0 20px; flex: 1; }
+        .hero { text-align: center; color: white; margin-bottom: 60px; }
+        .hero h2 { font-size: 3em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3); }
+        .hero p { font-size: 1.2em; opacity: 0.95; margin-bottom: 50px; }
+        .hero-buttons { display: flex; gap: 30px; justify-content: center; flex-wrap: wrap; }
+        .btn { padding: 18px 60px; border: none; border-radius: 8px; font-size: 1.2em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; text-decoration: none; display: inline-block; }
+        .btn-primary { background: white; color: #667eea; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .btn-primary:hover { transform: translateY(-5px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3); }
+        .btn-secondary { background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; }
+        .btn-secondary:hover { background: white; color: #667eea; transform: translateY(-5px); }
+        footer { background: rgba(0, 0, 0, 0.8); color: white; padding: 50px 20px; margin-top: 100px; }
+        .footer-content { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-section h4 { margin-bottom: 15px; color: #667eea; }
+        .footer-section ul { list-style: none; }
+        .footer-section ul li { margin: 8px 0; }
+        .footer-section a { color: #ccc; text-decoration: none; transition: all 0.3s ease; }
+        .footer-section a:hover { color: #667eea; }
+        .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 30px; text-align: center; color: #999; }
+        
+        /* Admin Login Modal */
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 40px; border-radius: 15px; width: 90%; max-width: 450px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        .modal h2 { color: #333; margin-bottom: 30px; text-align: center; font-size: 1.8em; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; color: #333; font-weight: 600; margin-bottom: 10px; }
+        .form-group input { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; transition: all 0.3s ease; font-family: Arial, sans-serif; }
+        .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 10px rgba(102, 126, 234, 0.2); }
+        .submit-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .error-message { background: #ffebee; color: #d32f2f; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border-left: 4px solid #d32f2f; }
+        .error-message.show { display: block; }
+        .success-message { background: #e8f5e9; color: #2e7d32; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border-left: 4px solid #2e7d32; }
+        .success-message.show { display: block; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">🏥</div>
+                <div class="logo-text">
+                    <h1>TFICMS</h1>
+                    <p>Tunajali Fertility & IVF Clinic Management System</p>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h2>Welcome to TFICMS</h2>
+            <p>Complete Fertility & IVF Clinic Management Solution</p>
+            <div class="hero-buttons">
+                <button onclick="openAdminLogin()" class="btn btn-primary">Admin Login</button>
+                <a href="/departments/" class="btn btn-secondary">Department Panel</a>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>🏥 About TFICMS</h4>
+                <p>Comprehensive clinic management system designed for modern fertility centers with advanced IVF and ART capabilities.</p>
+            </div>
+            <div class="footer-section">
+                <h4>📋 Quick Links</h4>
+                <ul>
+                    <li><a href="/">Home</a></li>
+                    <li><a href="/departments/">Department Panel</a></li>
+                    <li><a href="/admin/">Admin Panel</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>📞 Support</h4>
+                <ul>
+                    <li>Email: support@tunajali.com</li>
+                    <li>Phone: +254 XXX XXX XXX</li>
+                    <li>Hours: 24/7 Support</li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Tunajali Fertility & IVF Clinic. All rights reserved.</p>
+            <p>HIPAA & GDPR Compliant | Secure Medical Data Management</p>
+        </div>
+    </footer>
+
+    <!-- Admin Login Modal -->
+    <div id="adminLoginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAdminLogin()">&times;</span>
+            <h2>Admin Login</h2>
+            
+            <div class="success-message" id="successMessage"></div>
+            <div class="error-message" id="adminError"></div>
+            
+            <form id="adminLoginForm" onsubmit="handleAdminLogin(event)">
+                <div class="form-group">
+                    <label for="adminUsername">Username</label>
+                    <input type="text" id="adminUsername" placeholder="Enter admin username" required>
+                </div>
+                <div class="form-group">
+                    <label for="adminPassword">Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+                </div>
+                <button type="submit" class="submit-btn">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openAdminLogin() {
+            console.log("Opening admin login modal...");
+            document.getElementById("adminLoginModal").style.display = "block";
+            document.getElementById("adminUsername").value = "";
+            document.getElementById("adminPassword").value = "";
+            document.getElementById("adminError").style.display = "none";
+            document.getElementById("successMessage").style.display = "none";
+        }
+
+        function closeAdminLogin() {
+            console.log("Closing admin login modal...");
+            document.getElementById("adminLoginModal").style.display = "none";
+        }
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            console.log("Admin login form submitted...");
+            
+            const username = document.getElementById("adminUsername").value.trim();
+            const password = document.getElementById("adminPassword").value;
+            const errorDiv = document.getElementById("adminError");
+            const successDiv = document.getElementById("successMessage");
+
+            console.log("Username:", username);
+            console.log("Password length:", password.length);
+
+            if (!username || !password) {
+                showAdminError("Please enter both username and password");
+                return;
+            }
+
+            console.log("Sending login request to /api/login/");
+
+            fetch("/api/login/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": getCookie("csrftoken")
+                },
+                credentials: "same-origin",
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => {
+                console.log("Response status:", response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log("Response data:", data);
+                if (data.success) {
+                    showAdminSuccess("Login successful! Redirecting to admin panel...");
+                    setTimeout(function() {
+                        window.location.href = "/admin/";
+                    }, 1000);
+                } else {
+                    showAdminError(data.message || "Invalid username or password");
+                }
+            })
+            .catch(error => {
+                console.error("Fetch error:", error);
+                showAdminError("Connection error: " + error.message);
+            });
+        }
+
+        function showAdminError(message) {
+            const errorDiv = document.getElementById("adminError");
+            errorDiv.textContent = message;
+            errorDiv.classList.add("show");
+            setTimeout(() => {
+                errorDiv.classList.remove("show");
+            }, 5000);
+        }
+
+        function showAdminSuccess(message) {
+            const successDiv = document.getElementById("successMessage");
+            successDiv.textContent = message;
+            successDiv.classList.add("show");
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== "") {
+                const cookies = document.cookie.split(";");
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById("adminLoginModal");
+            if (event.target == modal) {
+                closeAdminLogin();
+            }
+        }
+
+        console.log("Home page loaded with admin login modal");
+    </script>
+</body>
+</html>

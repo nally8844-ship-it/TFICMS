@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Panel - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; min-height: 100vh; }
+        header { background: rgba(255, 255, 255, 0.98); padding: 20px 0; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        .header-content { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .logo-text h1 { color: #333; font-size: 1.5em; margin: 0; font-weight: 700; }
+        .logo-text p { color: #666; font-size: 0.8em; margin: 5px 0 0 0; }
+        .back-btn { padding: 10px 25px; border: 2px solid #667eea; background: white; color: #667eea; border-radius: 6px; text-decoration: none; font-weight: 600; transition: all 0.3s; cursor: pointer; }
+        .back-btn:hover { background: #667eea; color: white; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 60px 20px; }
+        .page-header { text-align: center; margin-bottom: 60px; }
+        .page-header h1 { color: #333; font-size: 2.5em; margin-bottom: 10px; }
+        .page-header p { color: #666; font-size: 1.1em; }
+        .departments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 60px; }
+        .dept-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); transition: all 0.3s; }
+        .dept-card:hover { transform: translateY(-10px); box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15); }
+        .dept-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 25px; text-align: center; }
+        .dept-icon { font-size: 4em; margin-bottom: 15px; }
+        .dept-name { font-size: 1.3em; font-weight: 600; }
+        .dept-body { padding: 25px; text-align: center; }
+        .dept-description { color: #666; margin-bottom: 20px; font-size: 0.95em; }
+        .login-btn { padding: 12px 30px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; width: 100%; }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        
+        /* Login Modal */
+        .modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.7); }
+        .modal-content { background-color: white; margin: 10% auto; padding: 40px; border-radius: 15px; width: 90%; max-width: 450px; box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3); }
+        .close { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
+        .close:hover { color: black; }
+        .modal h2 { color: #333; margin-bottom: 30px; text-align: center; font-size: 1.8em; }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; color: #333; font-weight: 600; margin-bottom: 10px; }
+        .form-group input { width: 100%; padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; font-size: 1em; transition: all 0.3s ease; }
+        .form-group input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 10px rgba(102, 126, 234, 0.2); }
+        .submit-btn { width: 100%; padding: 13px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-size: 1em; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4); }
+        .error-message { background: #ffebee; color: #d32f2f; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; border-left: 4px solid #d32f2f; }
+        .error-message.show { display: block; }
+        
+        footer { background: rgba(0, 0, 0, 0.8); color: white; padding: 50px 20px; text-align: center; }
+        .footer-content { max-width: 1200px; margin: 0 auto; margin-bottom: 30px; }
+        .footer-bottom { border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 30px; color: #999; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo-section">
+                <div class="logo-icon">🏥</div>
+                <div class="logo-text">
+                    <h1>TFICMS</h1>
+                    <p>Tunajali Fertility & IVF Clinic Management System</p>
+                </div>
+            </div>
+            <a href="/" class="back-btn">← Back to Home</a>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="page-header">
+            <h1>🏥 Department Panel</h1>
+            <p>Select Your Department to Login</p>
+        </div>
+
+        <div class="departments-grid">
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">👥</div><div class="dept-name">Reception</div></div><div class="dept-body"><p class="dept-description">Patient registration & appointments</p><button class="login-btn" onclick="openDeptLogin('Reception', '👥')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🏨</div><div class="dept-name">Outpatient</div></div><div class="dept-body"><p class="dept-description">Doctor consultations & EMR</p><button class="login-btn" onclick="openDeptLogin('Outpatient', '🏨')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">💝</div><div class="dept-name">Fertility Unit</div></div><div class="dept-body"><p class="dept-description">Fertility assessments</p><button class="login-btn" onclick="openDeptLogin('Fertility Unit', '💝')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🧬</div><div class="dept-name">IVF & ART</div></div><div class="dept-body"><p class="dept-description">IVF cycle management</p><button class="login-btn" onclick="openDeptLogin('IVF & ART', '🧬')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🧪</div><div class="dept-name">Andrology Lab</div></div><div class="dept-body"><p class="dept-description">Male fertility services</p><button class="login-btn" onclick="openDeptLogin('Andrology Lab', '🧪')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🔬</div><div class="dept-name">Embryology Lab</div></div><div class="dept-body"><p class="dept-description">Embryo development tracking</p><button class="login-btn" onclick="openDeptLogin('Embryology Lab', '🔬')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">📡</div><div class="dept-name">Ultrasound</div></div><div class="dept-body"><p class="dept-description">Imaging & scan reports</p><button class="login-btn" onclick="openDeptLogin('Ultrasound', '📡')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🩺</div><div class="dept-name">Nursing</div></div><div class="dept-body"><p class="dept-description">Patient care services</p><button class="login-btn" onclick="openDeptLogin('Nursing', '🩺')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">💊</div><div class="dept-name">Pharmacy</div></div><div class="dept-body"><p class="dept-description">Medication management</p><button class="login-btn" onclick="openDeptLogin('Pharmacy', '💊')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">💰</div><div class="dept-name">Finance</div></div><div class="dept-body"><p class="dept-description">Billing & payments</p><button class="login-btn" onclick="openDeptLogin('Finance', '💰')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🧬</div><div class="dept-name">Diagnostics</div></div><div class="dept-body"><p class="dept-description">Medical testing services</p><button class="login-btn" onclick="openDeptLogin('Diagnostics', '🧬')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">🧠</div><div class="dept-name">Counseling</div></div><div class="dept-body"><p class="dept-description">Mental health services</p><button class="login-btn" onclick="openDeptLogin('Counseling', '🧠')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">❄️</div><div class="dept-name">Cryobank</div></div><div class="dept-body"><p class="dept-description">Storage management</p><button class="login-btn" onclick="openDeptLogin('Cryobank', '❄️')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">👨‍💼</div><div class="dept-name">HR</div></div><div class="dept-body"><p class="dept-description">Staff & payroll</p><button class="login-btn" onclick="openDeptLogin('HR', '👨‍💼')">Login</button></div></div>
+            <div class="dept-card"><div class="dept-header"><div class="dept-icon">⚙️</div><div class="dept-name">Administration</div></div><div class="dept-body"><p class="dept-description">System management</p><button class="login-btn" onclick="openDeptLogin('Administration', '⚙️')">Login</button></div></div>
+        </div>
+    </div>
+
+    <!-- Department Login Modal -->
+    <div id="deptLoginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeDeptLogin()">&times;</span>
+            <h2 id="deptTitle"></h2>
+            
+            <div class="error-message" id="deptError"></div>
+            
+            <form onsubmit="handleDeptLogin(event)">
+                <div class="form-group">
+                    <label for="deptUsername">Username</label>
+                    <input type="text" id="deptUsername" name="username" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="deptPassword">Password</label>
+                    <input type="password" id="deptPassword" name="password" placeholder="Enter your password" required>
+                </div>
+                <button type="submit" class="submit-btn">Login to Department</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-content">
+            <p>🏥 Tunajali Fertility & IVF Clinic Management System</p>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 TFICMS. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let currentDept = '';
+
+        function openDeptLogin(deptName, icon) {
+            currentDept = deptName;
+            document.getElementById('deptTitle').textContent = icon + ' ' + deptName + ' Login';
+            document.getElementById('deptLoginModal').style.display = 'block';
+            document.getElementById('deptUsername').value = '';
+            document.getElementById('deptPassword').value = '';
+            document.getElementById('deptError').style.display = 'none';
+        }
+
+        function closeDeptLogin() {
+            document.getElementById('deptLoginModal').style.display = 'none';
+        }
+
+        function handleDeptLogin(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('deptUsername').value.trim();
+            const password = document.getElementById('deptPassword').value;
+            const errorDiv = document.getElementById('deptError');
+
+            if (!username || !password) {
+                showDeptError('Please enter both username and password');
+                return;
+            }
+
+            fetch('/api/login/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                credentials: 'same-origin',
+                body: JSON.stringify({
+                    username: username,
+                    password: password
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    sessionStorage.setItem('authenticated', 'true');
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('department', currentDept);
+                    sessionStorage.setItem('role', data.role);
+                    window.location.href = '/dashboard/';
+                } else {
+                    showDeptError(data.message || 'Invalid username or password');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showDeptError('An error occurred. Please try again.');
+            });
+        }
+
+        function showDeptError(message) {
+            const errorDiv = document.getElementById('deptError');
+            errorDiv.textContent = message;
+            errorDiv.classList.add('show');
+            setTimeout(() => {
+                errorDiv.classList.remove('show');
+            }, 5000);
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('deptLoginModal');
+            if (event.target == modal) {
+                closeDeptLogin();
+            }
+        }
+    </script>
+</body>
+</html>

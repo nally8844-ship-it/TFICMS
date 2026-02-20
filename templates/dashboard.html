@@ -1,0 +1,245 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; min-height: 100vh; }
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2); }
+        .header-content { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .header-left { display: flex; align-items: center; gap: 20px; }
+        .logo-icon { width: 50px; height: 50px; background: rgba(255, 255, 255, 0.2); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 30px; }
+        .logo-text h1 { font-size: 1.5em; font-weight: 700; }
+        .logo-text p { font-size: 0.8em; opacity: 0.9; }
+        .header-right { display: flex; align-items: center; gap: 20px; }
+        .user-info { text-align: right; }
+        .user-name { font-weight: 600; margin-bottom: 5px; }
+        .user-dept { font-size: 0.9em; opacity: 0.9; }
+        .logout-btn { padding: 10px 20px; background: rgba(255, 255, 255, 0.2); color: white; border: 2px solid white; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.3s; }
+        .logout-btn:hover { background: white; color: #667eea; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .welcome-card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); margin-bottom: 40px; }
+        .welcome-card h2 { color: #333; margin-bottom: 10px; }
+        .session-timer { background: #e3f2fd; border: 2px solid #2196f3; padding: 20px; border-radius: 8px; margin-top: 20px; text-align: center; color: #1565c0; font-weight: 600; font-size: 1.1em; }
+        .session-timer.warning { background: #fff3cd; border-color: #ffc107; color: #856404; }
+        .session-timer.danger { background: #ffebee; border-color: #f44336; color: #c62828; animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+        .modules-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .module-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08); transition: all 0.3s; }
+        .module-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15); }
+        .module-header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 25px; text-align: center; }
+        .module-icon { font-size: 3em; margin-bottom: 10px; }
+        .module-name { font-size: 1.2em; font-weight: 600; }
+        .module-body { padding: 20px; }
+        .module-description { color: #666; margin-bottom: 15px; }
+        .module-link { display: inline-block; padding: 10px 20px; background: #f0f0f0; color: #667eea; text-decoration: none; border-radius: 6px; font-weight: 600; transition: all 0.3s; }
+        .module-link:hover { background: #667eea; color: white; }
+        footer { background: rgba(0, 0, 0, 0.8); color: white; padding: 30px 20px; text-align: center; margin-top: 60px; }
+        
+        /* Warning Modal */
+        .warning-modal { display: none; position: fixed; z-index: 999; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); }
+        .warning-modal-content { background-color: #fff3cd; margin: 20% auto; padding: 40px; border-radius: 15px; width: 90%; max-width: 500px; border: 3px solid #ffc107; }
+        .warning-modal h2 { color: #856404; margin-bottom: 20px; font-size: 1.8em; }
+        .warning-modal p { color: #856404; margin-bottom: 20px; font-size: 1.1em; }
+        .modal-buttons { display: flex; gap: 15px; }
+        .btn-stay { padding: 12px 30px; background: #28a745; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; flex: 1; transition: all 0.3s; }
+        .btn-stay:hover { background: #218838; }
+        .btn-logout { padding: 12px 30px; background: #dc3545; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; flex: 1; transition: all 0.3s; }
+        .btn-logout:hover { background: #c82333; }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-icon">🏥</div>
+                <div class="logo-text">
+                    <h1>TFICMS</h1>
+                    <p>Tunajali Fertility & IVF Clinic Management System</p>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="user-info">
+                    <div class="user-name" id="userName">Loading...</div>
+                    <div class="user-dept" id="userDept">Department</div>
+                </div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="welcome-card">
+            <h2>Welcome to Your Dashboard! 👋</h2>
+            <div class="session-timer" id="sessionTimer">
+                ⏱️ Session expires in <span id="timer">45:00</span>
+            </div>
+        </div>
+
+        <div class="modules-grid" id="modulesGrid">
+            <div class="module-card">
+                <div class="module-header"><div class="module-icon">👥</div><div class="module-name">Patients</div></div>
+                <div class="module-body"><p class="module-description">Manage patient records</p><a href="/admin/" class="module-link">Access →</a></div>
+            </div>
+            <div class="module-card">
+                <div class="module-header"><div class="module-icon">📅</div><div class="module-name">Appointments</div></div>
+                <div class="module-body"><p class="module-description">Schedule appointments</p><a href="/admin/" class="module-link">Access →</a></div>
+            </div>
+            <div class="module-card">
+                <div class="module-header"><div class="module-icon">📊</div><div class="module-name">Reports</div></div>
+                <div class="module-body"><p class="module-description">View analytics & reports</p><a href="/admin/" class="module-link">Access →</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inactivity Warning Modal -->
+    <div id="warningModal" class="warning-modal">
+        <div class="warning-modal-content">
+            <h2>⚠️ Session Expiring Soon</h2>
+            <p>Your session will expire in <span id="warningTimer">5:00</span> due to inactivity.</p>
+            <p>Click "Stay Logged In" to continue or you will be automatically logged out.</p>
+            <div class="modal-buttons">
+                <button class="btn-stay" onclick="stayLoggedIn()">Stay Logged In</button>
+                <button class="btn-logout" onclick="logout()">Logout Now</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 TFICMS. All rights reserved. | Secure Healthcare Management</p>
+    </footer>
+
+    <script>
+        let remainingTime = 2700; // 45 minutes in seconds
+        let warningShown = false;
+        let countdownInterval;
+        const INACTIVITY_TIMEOUT = 2700; // 45 minutes
+        const WARNING_TIME = 2400; // 40 minutes - show warning at this point
+
+        window.addEventListener('load', function() {
+            const authenticated = sessionStorage.getItem('authenticated');
+            const username = sessionStorage.getItem('username');
+            const department = sessionStorage.getItem('department');
+
+            if (!authenticated || !username) {
+                window.location.href = '/';
+                return;
+            }
+
+            document.getElementById('userName').textContent = 'Hello, ' + username + '!';
+            document.getElementById('userDept').textContent = department || 'Administration';
+
+            startCountdown();
+            setupActivityListeners();
+        });
+
+        function startCountdown() {
+            countdownInterval = setInterval(function() {
+                remainingTime--;
+                updateTimer();
+
+                // Show warning at 40 minutes (300 seconds remaining)
+                if (remainingTime === WARNING_TIME) {
+                    showWarningModal();
+                }
+
+                // Logout at 45 minutes (0 seconds remaining)
+                if (remainingTime <= 0) {
+                    clearInterval(countdownInterval);
+                    sessionStorage.setItem('session_expired', 'true');
+                    logout();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            const timeString = String(minutes).padStart(2, '0') + ':' + String(seconds).padStart(2, '0');
+            
+            document.getElementById('timer').textContent = timeString;
+            
+            // Update warning modal timer if visible
+            if (document.getElementById('warningModal').style.display === 'block') {
+                document.getElementById('warningTimer').textContent = timeString;
+            }
+            
+            // Change color based on remaining time
+            const sessionTimer = document.getElementById('sessionTimer');
+            if (remainingTime <= 300) {
+                sessionTimer.classList.add('danger');
+                sessionTimer.classList.remove('warning');
+            } else if (remainingTime <= WARNING_TIME) {
+                sessionTimer.classList.add('warning');
+                sessionTimer.classList.remove('danger');
+            }
+        }
+
+        function setupActivityListeners() {
+            // Reset timer on any user activity
+            const events = ['click', 'keypress', 'mousemove', 'scroll', 'touchstart'];
+            events.forEach(event => {
+                document.addEventListener(event, resetInactivityTimer, true);
+            });
+        }
+
+        function resetInactivityTimer() {
+            // Only reset if warning hasn't been shown yet
+            if (!warningShown) {
+                remainingTime = INACTIVITY_TIMEOUT;
+                updateTimer();
+            }
+        }
+
+        function showWarningModal() {
+            warningShown = true;
+            document.getElementById('warningModal').style.display = 'block';
+        }
+
+        function hideWarningModal() {
+            document.getElementById('warningModal').style.display = 'none';
+        }
+
+        function stayLoggedIn() {
+            warningShown = false;
+            remainingTime = INACTIVITY_TIMEOUT;
+            updateTimer();
+            hideWarningModal();
+            
+            // Reset session on server
+            fetch('/api/reset-session/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                },
+                credentials: 'same-origin'
+            });
+        }
+
+        function logout() {
+            clearInterval(countdownInterval);
+            sessionStorage.removeItem('authenticated');
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('department');
+            window.location.href = '/';
+        }
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+    </script>
+</body>
+</html>

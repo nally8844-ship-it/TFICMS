@@ -1,0 +1,92 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Department - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; display: flex; justify-content: space-between; }
+        .navbar h1 { margin: 0; }
+        .navbar a { color: white; text-decoration: none; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 30px 20px; }
+        .section { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .section h2 { color: #667eea; margin-bottom: 15px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #667eea; }
+        .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+        .patient-card { background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin-bottom: 10px; border-radius: 5px; }
+        .patient-card h3 { color: #333; margin-bottom: 5px; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 10px; border-radius: 5px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 id="deptTitle">Department</h1>
+        <a href="/">← Back to Home</a>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>📥 Assigned Patients</h2>
+            <div class="info">Patients assigned to this department</div>
+
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="total">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="pending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="progress">0</div>
+                    <div class="stat-label">In Progress</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="completed">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+
+            <div id="patientsList"></div>
+        </div>
+    </div>
+
+    <script>
+        const deptName = document.body.getAttribute('data-dept') || 'Department';
+        document.getElementById('deptTitle').textContent = deptName + ' Panel';
+
+        let assignments = JSON.parse(localStorage.getItem('tficms_assignments')) || [];
+        let patients = JSON.parse(localStorage.getItem('tficms_patients')) || [];
+
+        function loadPatients() {
+            const deptAssignments = assignments.filter(a => a.dept === deptName);
+
+            if (deptAssignments.length === 0) {
+                document.getElementById('patientsList').innerHTML = '<p style="text-align: center; color: #999; padding: 40px;">No patients assigned</p>';
+                return;
+            }
+
+            let html = '';
+            deptAssignments.forEach(a => {
+                const patient = patients.find(p => p.id === a.patientId);
+                html += '<div class="patient-card"><h3>' + a.patientName + '</h3>' +
+                    '<p><strong>ID:</strong> ' + a.patientId + '</p>' +
+                    '<p><strong>Phone:</strong> ' + (patient ? patient.phone : 'N/A') + '</p>' +
+                    '<p><strong>Assigned:</strong> ' + a.assignDate + '</p>' +
+                    '<p><strong>Staff:</strong> ' + a.staff + '</p></div>';
+            });
+
+            document.getElementById('patientsList').innerHTML = html;
+            document.getElementById('total').textContent = deptAssignments.length;
+            document.getElementById('pending').textContent = deptAssignments.length;
+        }
+
+        loadPatients();
+        setInterval(loadPatients, 2000);
+    </script>
+</body>
+</html>

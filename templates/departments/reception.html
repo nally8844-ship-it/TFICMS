@@ -1,0 +1,278 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Reception - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; display: flex; justify-content: space-between; }
+        .navbar h1 { margin: 0; }
+        .navbar-right { display: flex; gap: 10px; }
+        .btn-nav { background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; text-decoration: none; font-weight: bold; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; }
+        .tab-content.active { display: block; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #667eea; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .patient-card { background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 10px 0; border-radius: 5px; }
+        .queue-badge { display: inline-block; background: #667eea; color: white; padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏢 RECEPTION - Patient Registration & Check-in</h1>
+        <div class="navbar-right">
+            <a href="/" class="btn-nav">🏠 Home</a>
+            <button class="btn-nav" onclick="logout()">🚪 Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('register')">📝 Register Patient</button>
+            <button class="tab-btn" onclick="switchTab('assign')">📅 Schedule & Assign</button>
+            <button class="tab-btn" onclick="switchTab('queue')">📊 Today Queue</button>
+            <button class="tab-btn" onclick="switchTab('checkin')">✅ Check-in</button>
+        </div>
+
+        <div id="register" class="tab-content active">
+            <h2>Register New Patient</h2>
+            <div id="regMsg"></div>
+            <form onsubmit="registerPatient(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>First Name *</label>
+                        <input type="text" id="fname" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Last Name *</label>
+                        <input type="text" id="lname" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Phone *</label>
+                        <input type="text" id="phone" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Age *</label>
+                        <input type="number" id="age" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Gender *</label>
+                        <select id="gender" required>
+                            <option value="">Select</option>
+                            <option value="M">Male</option>
+                            <option value="F">Female</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn">✓ Register Patient</button>
+            </form>
+        </div>
+
+        <div id="assign" class="tab-content">
+            <h2>Schedule Appointment & Assign to Department</h2>
+            <div id="assignMsg"></div>
+            <form onsubmit="scheduleAndAssign(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Patient *</label>
+                        <select id="patientSelect" required>
+                            <option value="">-- SELECT --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Target Department *</label>
+                        <select id="deptSelect" required>
+                            <option value="">-- SELECT --</option>
+                            <option value="OPD">OPD</option>
+                            <option value="FERTILITY">Fertility Consultation</option>
+                            <option value="IVF">IVF Department</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Doctor Name *</label>
+                        <input type="text" id="doctorName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Appointment Date *</label>
+                        <input type="datetime-local" id="aptDate" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn">✅ Schedule & Assign</button>
+            </form>
+        </div>
+
+        <div id="queue" class="tab-content">
+            <h2>Today's Queue</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalApt">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="checkedIn">0</div>
+                    <div class="stat-label">Checked In</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="pending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="inConsult">0</div>
+                    <div class="stat-label">In Consultation</div>
+                </div>
+            </div>
+            <div id="queueList"></div>
+        </div>
+
+        <div id="checkin" class="tab-content">
+            <h2>Patient Check-in</h2>
+            <div id="checkinMsg"></div>
+            <div class="form-group">
+                <label>Scan Patient ID/Phone *</label>
+                <input type="text" id="checkinId" placeholder="P123456..." autofocus>
+            </div>
+            <button class="btn" onclick="checkInPatient()">✅ CHECK IN</button>
+        </div>
+    </div>
+
+    <script>
+        let patients = JSON.parse(localStorage.getItem('tficms_patients')) || [];
+        let assignments = JSON.parse(localStorage.getItem('tficms_assignments')) || [];
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'queue') loadQueue();
+            if (tab === 'assign') loadPatientList();
+        }
+
+        function registerPatient(e) {
+            e.preventDefault();
+
+            const patient = {
+                id: 'P' + Date.now(),
+                firstName: document.getElementById('fname').value,
+                lastName: document.getElementById('lname').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                registrationDate: new Date().toLocaleString(),
+                status: 'Registered'
+            };
+
+            patients.push(patient);
+            localStorage.setItem('tficms_patients', JSON.stringify(patients));
+
+            document.getElementById('regMsg').innerHTML = 
+                '<div class="success">✅ Patient <strong>' + patient.firstName + ' ' + patient.lastName + '</strong> registered!<br>ID: <strong>' + patient.id + '</strong></div>';
+            
+            document.getElementById('fname').value = '';
+            document.getElementById('lname').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gender').value = '';
+        }
+
+        function loadPatientList() {
+            patients = JSON.parse(localStorage.getItem('tficms_patients')) || [];
+            let html = '<option value="">-- SELECT --</option>';
+            patients.forEach(p => {
+                html += '<option value="' + p.id + '">' + p.firstName + ' ' + p.lastName + ' (' + p.id + ')</option>';
+            });
+            document.getElementById('patientSelect').innerHTML = html;
+        }
+
+        function scheduleAndAssign(e) {
+            e.preventDefault();
+
+            const patientId = document.getElementById('patientSelect').value;
+            const patient = patients.find(p => p.id === patientId);
+
+            const assignment = {
+                id: 'ASN-' + Date.now(),
+                patientId: patientId,
+                patientName: patient.firstName + ' ' + patient.lastName,
+                patientEmail: patient.email,
+                patientPhone: patient.phone,
+                department: document.getElementById('deptSelect').value,
+                staff: document.getElementById('doctorName').value,
+                appointmentDate: document.getElementById('aptDate').value,
+                queueNumber: Math.floor(Math.random() * 100) + 1,
+                assignedDate: new Date().toLocaleString(),
+                status: 'Scheduled'
+            };
+
+            assignments.push(assignment);
+            localStorage.setItem('tficms_assignments', JSON.stringify(assignments));
+
+            document.getElementById('assignMsg').innerHTML = 
+                '<div class="success">✅ <strong>' + patient.firstName + '</strong> scheduled!<br>Queue #<strong>' + assignment.queueNumber + '</strong></div>';
+            
+            document.getElementById('patientSelect').value = '';
+            document.getElementById('deptSelect').value = '';
+            document.getElementById('doctorName').value = '';
+            document.getElementById('aptDate').value = '';
+        }
+
+        function loadQueue() {
+            assignments = JSON.parse(localStorage.getItem('tficms_assignments')) || [];
+            let html = '';
+            assignments.forEach(a => {
+                html += '<div class="patient-card">' +
+                    '<span class="queue-badge">Queue #' + a.queueNumber + '</span><br>' +
+                    '<strong>' + a.patientName + '</strong><br>' +
+                    'Department: ' + a.department + ' | Doctor: ' + a.staff + '<br>' +
+                    'Status: ' + a.status +
+                    '</div>';
+            });
+            document.getElementById('queueList').innerHTML = html || '<p>No appointments</p>';
+            document.getElementById('totalApt').textContent = assignments.length;
+        }
+
+        function checkInPatient() {
+            const id = document.getElementById('checkinId').value;
+            const patient = patients.find(p => p.id === id || p.phone === id);
+            
+            if (patient) {
+                document.getElementById('checkinMsg').innerHTML = 
+                    '<div class="success">✅ <strong>' + patient.firstName + ' ' + patient.lastName + '</strong> checked in!</div>';
+                document.getElementById('checkinId').value = '';
+            } else {
+                document.getElementById('checkinMsg').innerHTML = 
+                    '<div style="background: #f8d7da; color: #721c24; padding: 10px; border-radius: 5px;">❌ Patient not found</div>';
+            }
+        }
+
+        function logout() {
+            window.location.href = '/';
+        }
+    </script>
+</body>
+</html>

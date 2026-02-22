@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Embryology Lab - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; }
+        .tab-content.active { display: block; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #667eea; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .embryo-card { background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 10px 0; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🧫 EMBRYOLOGY LABORATORY - Gamete & Embryo Processing</h1>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('tracking')">📊 Embryo Tracking</button>
+            <button class="tab-btn" onclick="switchTab('development')">📈 Record Development</button>
+            <button class="tab-btn" onclick="switchTab('transfer')">🔄 Transfer/Freeze</button>
+        </div>
+
+        <div id="tracking" class="tab-content active">
+            <h2>Active Embryos</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="total">0</div>
+                    <div class="stat-label">Total Embryos</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="developing">0</div>
+                    <div class="stat-label">Developing</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="frozen">0</div>
+                    <div class="stat-label">Frozen</div>
+                </div>
+            </div>
+            <div id="embryosList"></div>
+        </div>
+
+        <div id="development" class="tab-content">
+            <h2>Record Embryo Development</h2>
+            <div id="devMsg"></div>
+            <form onsubmit="recordDevelopment(event)">
+                <div class="form-group">
+                    <label>IVF Cycle ID *</label>
+                    <input type="text" id="cycleId" required>
+                </div>
+                <div class="form-group">
+                    <label>Day of Development *</label>
+                    <select id="day" required>
+                        <option value="">-- SELECT --</option>
+                        <option value="1">Day 1 - Fertilization</option>
+                        <option value="2">Day 2 - Cleavage</option>
+                        <option value="3">Day 3 - Early Cleavage</option>
+                        <option value="4">Day 4 - Morula</option>
+                        <option value="5">Day 5 - Blastocyst</option>
+                        <option value="6">Day 6 - Expanded Blastocyst</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Embryo Grading *</label>
+                    <input type="text" id="grading" placeholder="e.g., 4AA" required>
+                </div>
+                <div class="form-group">
+                    <label>Number of Viable Embryos *</label>
+                    <input type="number" id="count" required>
+                </div>
+                <button type="submit" class="btn">📈 Record Development</button>
+            </form>
+        </div>
+
+        <div id="transfer" class="tab-content">
+            <h2>Embryo Transfer or Cryopreservation</h2>
+            <div id="transferMsg"></div>
+            <form onsubmit="processEmbryo(event)">
+                <div class="form-group">
+                    <label>Embryo ID *</label>
+                    <input type="text" id="embryoId" required>
+                </div>
+                <div class="form-group">
+                    <label>Action *</label>
+                    <select id="action" required>
+                        <option value="">-- SELECT --</option>
+                        <option value="Transfer">Fresh Embryo Transfer</option>
+                        <option value="Freeze">Cryopreservation</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Details *</label>
+                    <textarea id="details" rows="2" placeholder="Transfer time, tank location, etc." required></textarea>
+                </div>
+                <button type="submit" class="btn">✓ Process Embryo</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/tficms_workflow.js"></script>
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+            if (tab === 'tracking') loadEmbryo();
+        }
+
+        function loadEmbryo() {
+            const embryos = workflow.embryos;
+            const frozen = embryos.filter(e => e.status === 'Frozen').length;
+            const dev = embryos.filter(e => e.status === 'Developing').length;
+            let html = '';
+            embryos.forEach(e => {
+                html += '<div class="embryo-card"><strong>Embryo ID: ' + e.id + '</strong><br>' +
+                    'Day: ' + e.day + ' | Grading: ' + e.grading + '<br>' +
+                    'Status: ' + e.status + '</div>';
+            });
+            document.getElementById('embryosList').innerHTML = html || '<p>No embryos</p>';
+            document.getElementById('total').textContent = embryos.length;
+            document.getElementById('frozen').textContent = frozen;
+            document.getElementById('developing').textContent = dev;
+        }
+
+        function recordDevelopment(e) {
+            e.preventDefault();
+            document.getElementById('devMsg').innerHTML = '<div class="success">✅ Embryo development recorded for Day ' + document.getElementById('day').value + '</div>';
+        }
+
+        function processEmbryo(e) {
+            e.preventDefault();
+            const action = document.getElementById('action').value;
+            document.getElementById('transferMsg').innerHTML = '<div class="success">✅ Embryo marked for ' + action + '</div>';
+        }
+
+        loadEmbryo();
+    </script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>IVF Department - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; }
+        .tab-content.active { display: block; }
+        .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #667eea; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .cycle-card { background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 10px 0; border-radius: 5px; }
+        .timeline { display: flex; gap: 10px; margin: 15px 0; flex-wrap: wrap; }
+        .timeline-step { background: #e0e0e0; padding: 10px; border-radius: 5px; }
+        .timeline-step.active { background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏥 IVF & ART DEPARTMENT - Cycle Management</h1>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('cycles')">📊 Active Cycles</button>
+            <button class="tab-btn" onclick="switchTab('initiate')">🚀 Initiate Cycle</button>
+            <button class="tab-btn" onclick="switchTab('monitoring')">📈 Monitoring</button>
+        </div>
+
+        <div id="cycles" class="tab-content active">
+            <h2>Active IVF Cycles</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="active">0</div>
+                    <div class="stat-label">Active Cycles</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stimulation">0</div>
+                    <div class="stat-label">Stimulation Phase</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="transfer">0</div>
+                    <div class="stat-label">Ready for Transfer</div>
+                </div>
+            </div>
+            <div id="cyclesList"></div>
+        </div>
+
+        <div id="initiate" class="tab-content">
+            <h2>Initiate New IVF Cycle</h2>
+            <div id="initiateMsg"></div>
+            <form onsubmit="initiateIVF(event)">
+                <div class="form-group">
+                    <label>Patient ID/Name *</label>
+                    <input type="text" id="patientId" required>
+                </div>
+                <div class="form-group">
+                    <label>IVF Protocol *</label>
+                    <select id="protocol" required>
+                        <option value="">-- SELECT --</option>
+                        <option value="Long Protocol">Long Protocol (GnRH Agonist)</option>
+                        <option value="Short Protocol">Short Protocol (GnRH Antagonist)</option>
+                        <option value="Mild Stimulation">Mild Stimulation</option>
+                        <option value="Natural Cycle">Natural Cycle IVF</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Start Date *</label>
+                    <input type="date" id="startDate" required>
+                </div>
+                <button type="submit" class="btn">🚀 Initiate Cycle</button>
+            </form>
+        </div>
+
+        <div id="monitoring" class="tab-content">
+            <h2>IVF Cycle Monitoring</h2>
+            <div class="timeline">
+                <div class="timeline-step active">Stimulation</div>
+                <div class="timeline-step">Egg Retrieval</div>
+                <div class="timeline-step">Fertilization</div>
+                <div class="timeline-step">Embryo Development</div>
+                <div class="timeline-step">Transfer/Freeze</div>
+                <div class="timeline-step">Pregnancy Test</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/tficms_workflow.js"></script>
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+            if (tab === 'cycles') loadCycles();
+        }
+
+        function loadCycles() {
+            const cycles = workflow.ivfCycles;
+            let html = '';
+            cycles.forEach(c => {
+                html += '<div class="cycle-card"><strong>' + c.patientName + '</strong><br>' +
+                    'Protocol: ' + c.protocol + '<br>' +
+                    'Status: ' + c.status + ' | Started: ' + c.startDate + '</div>';
+            });
+            document.getElementById('cyclesList').innerHTML = html || '<p>No active cycles</p>';
+            document.getElementById('active').textContent = cycles.length;
+        }
+
+        function initiateIVF(e) {
+            e.preventDefault();
+            const cycle = workflow.initiateIVFCycle(
+                document.getElementById('patientId').value,
+                document.getElementById('protocol').value,
+                document.getElementById('startDate').value,
+                'Dr. IVF Specialist'
+            );
+            document.getElementById('initiateMsg').innerHTML = '<div class="success">✅ IVF Cycle initiated for ' + cycle.patientName + '</div>';
+        }
+
+        loadCycles();
+    </script>
+</body>
+</html>

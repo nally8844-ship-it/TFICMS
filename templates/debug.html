@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEBUG - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: monospace; background: #1e1e1e; color: #00ff00; padding: 20px; }
+        .section { background: #333; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        h2 { color: #ffff00; margin-bottom: 10px; }
+        pre { overflow-x: auto; background: #222; padding: 10px; border-radius: 3px; }
+        .btn { background: #00ff00; color: #000; padding: 10px 20px; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; margin: 5px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 DEBUG - Check Data in LocalStorage</h1>
+    
+    <div class="section">
+        <h2>1. All Patient Assignments</h2>
+        <button class="btn" onclick="showAssignments()">Show Assignments</button>
+        <pre id="assignmentsOutput"></pre>
+    </div>
+
+    <div class="section">
+        <h2>2. All Patients</h2>
+        <button class="btn" onclick="showPatients()">Show Patients</button>
+        <pre id="patientsOutput"></pre>
+    </div>
+
+    <div class="section">
+        <h2>3. Clear ALL Data (Start Fresh)</h2>
+        <button class="btn" onclick="clearAllData()">⚠️ CLEAR ALL DATA</button>
+    </div>
+
+    <div class="section">
+        <h2>4. Check Assignments by Department</h2>
+        <button class="btn" onclick="checkByDept('OPD')">OPD</button>
+        <button class="btn" onclick="checkByDept('Fertility')">Fertility</button>
+        <button class="btn" onclick="checkByDept('Pharmacy')">Pharmacy</button>
+        <button class="btn" onclick="checkByDept('IVF')">IVF</button>
+        <button class="btn" onclick="checkByDept('Lab')">Lab</button>
+        <pre id="deptOutput"></pre>
+    </div>
+
+    <script>
+        function showAssignments() {
+            const assignments = JSON.parse(localStorage.getItem('patient_assignments')) || [];
+            document.getElementById('assignmentsOutput').textContent = JSON.stringify(assignments, null, 2);
+        }
+
+        function showPatients() {
+            const patients = JSON.parse(localStorage.getItem('reception_patients')) || [];
+            document.getElementById('patientsOutput').textContent = JSON.stringify(patients, null, 2);
+        }
+
+        function clearAllData() {
+            if (confirm('⚠️ This will DELETE ALL data! Continue?')) {
+                localStorage.removeItem('reception_patients');
+                localStorage.removeItem('patient_assignments');
+                localStorage.removeItem('patient_workflows');
+                localStorage.removeItem('work_history');
+                alert('✓ All data cleared! Refresh page.');
+                location.reload();
+            }
+        }
+
+        function checkByDept(dept) {
+            const assignments = JSON.parse(localStorage.getItem('patient_assignments')) || [];
+            const filtered = assignments.filter(a => a.targetDept === dept);
+            document.getElementById('deptOutput').textContent = `Found ${filtered.length} assignments for ${dept}:\n\n` + JSON.stringify(filtered, null, 2);
+        }
+
+        showAssignments();
+    </script>
+</body>
+</html>

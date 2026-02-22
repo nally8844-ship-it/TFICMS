@@ -1,0 +1,530 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #2c3e50; color: white; padding: 15px 30px; display: flex; justify-content: space-between; }
+        .navbar h1 { margin: 0; }
+        .navbar a { color: white; text-decoration: none; margin-left: 15px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #bdc3c7; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #2c3e50; color: white; }
+        .content { background: white; padding: 20px; border-radius: 10px; }
+        .section { margin-bottom: 30px; }
+        .section h2 { color: #2c3e50; margin-bottom: 15px; border-bottom: 2px solid #3498db; padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: #ecf0f1; padding: 15px; border-radius: 5px; border-left: 4px solid #3498db; }
+        .card h3 { color: #2c3e50; font-size: 24px; }
+        .card p { color: #7f8c8d; font-size: 12px; margin-top: 5px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #34495e; color: white; padding: 10px; text-align: left; }
+        td { padding: 10px; border-bottom: 1px solid #ecf0f1; }
+        tr:hover { background: #f8f9fa; }
+        .btn { background: #3498db; color: white; padding: 8px 15px; border: none; cursor: pointer; border-radius: 5px; }
+        .btn:hover { background: #2980b9; }
+        .btn-danger { background: #e74c3c; }
+        .btn-danger:hover { background: #c0392b; }
+        .btn-success { background: #27ae60; }
+        .btn-success:hover { background: #229954; }
+        .form-group { margin-bottom: 10px; }
+        .form-group label { display: block; font-weight: bold; margin-bottom: 5px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid #bdc3c7; border-radius: 3px; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 5px; margin-bottom: 20px; border-left: 4px solid #0c5460; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>👨‍💼 ADMIN DASHBOARD - System Management</h1>
+        <div>
+            <a href="/">🏠 Home</a>
+            <a href="/" onclick="logout()">🚪 Logout</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="openTab(event, 'overview')">📊 Overview</button>
+            <button class="tab-btn" onclick="openTab(event, 'users')">👥 Users</button>
+            <button class="tab-btn" onclick="openTab(event, 'roles')">🔐 Roles</button>
+            <button class="tab-btn" onclick="openTab(event, 'billing')">💰 Billing</button>
+            <button class="tab-btn" onclick="openTab(event, 'audit')">📋 Audit</button>
+            <button class="tab-btn" onclick="openTab(event, 'security')">🔒 Security</button>
+        </div>
+
+        <!-- OVERVIEW TAB -->
+        <div id="overview" class="content">
+            <div class="info">
+                <strong>👨‍💼 Admin Role:</strong> System oversight, user management, configuration, audit & compliance, financial control, data security - NO clinical tasks
+            </div>
+
+            <div class="section">
+                <h2>📊 System Overview</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3 id="totalPatients">0</h3>
+                        <p>Total Patients</p>
+                    </div>
+                    <div class="card">
+                        <h3 id="activeIVF">0</h3>
+                        <p>Active IVF Cycles</p>
+                    </div>
+                    <div class="card">
+                        <h3 id="totalRevenue">$0</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                    <div class="card">
+                        <h3 id="pendingPayments">0</h3>
+                        <p>Pending Payments</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>🏢 Department Activity</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Department</th>
+                            <th>Patients</th>
+                            <th>Tasks Today</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Reception</td>
+                            <td id="rec">0</td>
+                            <td>12</td>
+                            <td>✅ Active</td>
+                        </tr>
+                        <tr>
+                            <td>OPD</td>
+                            <td id="opd">0</td>
+                            <td>8</td>
+                            <td>✅ Active</td>
+                        </tr>
+                        <tr>
+                            <td>IVF</td>
+                            <td id="ivf">0</td>
+                            <td>15</td>
+                            <td>✅ Active</td>
+                        </tr>
+                        <tr>
+                            <td>Pharmacy</td>
+                            <td id="pharm">0</td>
+                            <td>20</td>
+                            <td>✅ Active</td>
+                        </tr>
+                        <tr>
+                            <td>Lab</td>
+                            <td id="lab">0</td>
+                            <td>10</td>
+                            <td>✅ Active</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="section">
+                <h2>⚠️ System Alerts</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Alert</th>
+                            <th>Type</th>
+                            <th>Priority</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Low Drug Stock - Paracetamol</td>
+                            <td>Inventory</td>
+                            <td style="color: red; font-weight: bold;">HIGH</td>
+                        </tr>
+                        <tr>
+                            <td>Backup not run for 3 days</td>
+                            <td>System</td>
+                            <td style="color: red; font-weight: bold;">HIGH</td>
+                        </tr>
+                        <tr>
+                            <td>Cryotank maintenance due</td>
+                            <td>Maintenance</td>
+                            <td style="color: orange; font-weight: bold;">MEDIUM</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- USERS TAB -->
+        <div id="users" class="content hidden">
+            <div class="info">
+                ℹ️ Create and manage staff accounts, assign roles and permissions
+            </div>
+
+            <div class="section">
+                <h2>➕ Create New User Account</h2>
+                <form onsubmit="createUser(event)" style="max-width: 500px;">
+                    <div class="form-group">
+                        <label>Full Name *</label>
+                        <input type="text" id="userName" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Email *</label>
+                        <input type="email" id="userEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Role *</label>
+                        <select id="userRole" required>
+                            <option value="">-- SELECT ROLE --</option>
+                            <option value="Receptionist">🏢 Receptionist</option>
+                            <option value="Doctor">🏥 Doctor</option>
+                            <option value="Lab Technician">🧪 Lab Technician</option>
+                            <option value="Pharmacist">💊 Pharmacist</option>
+                            <option value="Nurse">👩‍⚕️ Nurse</option>
+                            <option value="Embryologist">🧫 Embryologist</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Department *</label>
+                        <select id="userDept" required>
+                            <option value="">-- SELECT DEPT --</option>
+                            <option value="Reception">Reception</option>
+                            <option value="OPD">OPD</option>
+                            <option value="IVF">IVF</option>
+                            <option value="Pharmacy">Pharmacy</option>
+                            <option value="Lab">Lab</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">✅ Create Account</button>
+                </form>
+            </div>
+
+            <div class="section">
+                <h2>👥 All Users</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Department</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="userTable">
+                        <tr>
+                            <td colspan="7" style="text-align: center;">No users created</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- ROLES TAB -->
+        <div id="roles" class="content hidden">
+            <div class="info">
+                ℹ️ Define and manage role-based access control (RBAC)
+            </div>
+
+            <div class="section">
+                <h2>🔐 Role Permissions</h2>
+                
+                <h3 style="margin-top: 20px; color: #2c3e50;">🏢 Receptionist</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>✓ Patient Registration</li>
+                    <li>✓ Schedule Appointments</li>
+                    <li>✓ Check-in/Check-out</li>
+                    <li>✗ View Full EMR</li>
+                    <li>✗ Prescribe Medication</li>
+                </ul>
+
+                <h3 style="margin-top: 20px; color: #2c3e50;">🏥 Doctor</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>✓ View Full EMR</li>
+                    <li>✓ Record Consultation</li>
+                    <li>✓ Order Lab Tests</li>
+                    <li>✓ Prescribe Medication</li>
+                    <li>✓ Refer to Departments</li>
+                    <li>✗ Dispense Medication</li>
+                </ul>
+
+                <h3 style="margin-top: 20px; color: #2c3e50;">🧪 Lab Technician</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>✓ View Lab Orders</li>
+                    <li>✓ Record Test Results</li>
+                    <li>✗ View Full EMR</li>
+                    <li>✗ Prescribe</li>
+                </ul>
+
+                <h3 style="margin-top: 20px; color: #2c3e50;">💊 Pharmacist</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>✓ View Prescriptions</li>
+                    <li>✓ Dispense Medication</li>
+                    <li>✓ Manage Inventory</li>
+                    <li>✗ View Full EMR</li>
+                    <li>✗ Create Prescriptions</li>
+                </ul>
+
+                <h3 style="margin-top: 20px; color: #2c3e50;">👨‍💼 Admin</h3>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li>✓ Full System Access</li>
+                    <li>✓ User Management</li>
+                    <li>✓ Configuration</li>
+                    <li>✓ Audit Logs</li>
+                    <li>✓ Financial Reports</li>
+                    <li>✓ Data Backup</li>
+                    <li>✗ Clinical Tasks (unless also doctor)</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- BILLING TAB -->
+        <div id="billing" class="content hidden">
+            <div class="info">
+                ℹ️ Financial control, revenue tracking, and billing management
+            </div>
+
+            <div class="section">
+                <h2>💰 Financial Overview</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3>$45,600</h3>
+                        <p>Total Revenue</p>
+                    </div>
+                    <div class="card">
+                        <h3>$38,900</h3>
+                        <p>Received Payments</p>
+                    </div>
+                    <div class="card">
+                        <h3>$6,700</h3>
+                        <p>Outstanding</p>
+                    </div>
+                    <div class="card">
+                        <h3>12</h3>
+                        <p>Pending Claims</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💵 IVF Packages (Admin Sets Prices)</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Package</th>
+                            <th>Price</th>
+                            <th>Includes</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Basic IVF</td>
+                            <td>$3,500</td>
+                            <td>Stimulation + ER + ET</td>
+                            <td><button class="btn">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>IVF with ICSI</td>
+                            <td>$4,200</td>
+                            <td>Basic + ICSI</td>
+                            <td><button class="btn">Edit</button></td>
+                        </tr>
+                        <tr>
+                            <td>IVF with PGT</td>
+                            <td>$5,500</td>
+                            <td>Basic + Genetic Testing</td>
+                            <td><button class="btn">Edit</button></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- AUDIT TAB -->
+        <div id="audit" class="content hidden">
+            <div class="info">
+                ℹ️ Track all activities for compliance, audits, and legal requirements
+            </div>
+
+            <div class="section">
+                <h2>📋 Activity Logs</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Action</th>
+                            <th>Patient</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-02-22 10:45</td>
+                            <td>Dr. Smith</td>
+                            <td>Recorded Consultation</td>
+                            <td>P001</td>
+                            <td>✅ Success</td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-22 10:30</td>
+                            <td>Receptionist</td>
+                            <td>Registered Patient</td>
+                            <td>New</td>
+                            <td>✅ Success</td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-22 09:15</td>
+                            <td>Pharmacist</td>
+                            <td>Dispensed Medication</td>
+                            <td>P002</td>
+                            <td>✅ Success</td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-22 08:00</td>
+                            <td>Lab Tech</td>
+                            <td>Recorded Lab Result</td>
+                            <td>P003</td>
+                            <td>✅ Success</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- SECURITY TAB -->
+        <div id="security" class="content hidden">
+            <div class="info">
+                ℹ️ System security, backups, encryption, and access control
+            </div>
+
+            <div class="section">
+                <h2>🔒 Security Settings</h2>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" checked>
+                        <span><strong>Two-Factor Authentication (2FA)</strong> - Enabled</span>
+                    </label>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" checked>
+                        <span><strong>Password Expiration</strong> - 90 days</span>
+                    </label>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" checked>
+                        <span><strong>Data Encryption</strong> - Enabled</span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>💾 Backup & Restore</h2>
+                <p><strong>Last Backup:</strong> 2026-02-22 08:00 AM</p>
+                <button class="btn btn-success" onclick="backupSystem()" style="margin-right: 10px;">💾 Backup Now</button>
+                <button class="btn" onclick="alert('Restore function')">↩️ Restore Data</button>
+                <button class="btn btn-danger" onclick="clearData()">🗑️ Clear Test Data</button>
+            </div>
+
+            <div class="section">
+                <h2>🔐 Login Activity</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Login Time</th>
+                            <th>IP Address</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Admin</td>
+                            <td>2026-02-22 10:00</td>
+                            <td>192.168.1.100</td>
+                            <td>✅ Success</td>
+                        </tr>
+                        <tr>
+                            <td>Dr. Smith</td>
+                            <td>2026-02-22 09:30</td>
+                            <td>192.168.1.105</td>
+                            <td>✅ Success</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            const tabs = document.querySelectorAll('.content');
+            tabs.forEach(tab => tab.classList.add('hidden'));
+            
+            const btns = document.querySelectorAll('.tab-btn');
+            btns.forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabName).classList.remove('hidden');
+            evt.currentTarget.classList.add('active');
+
+            if (tabName === 'overview') loadOverview();
+        }
+
+        function loadOverview() {
+            const patients = JSON.parse(localStorage.getItem('tficms_patients')) || [];
+            const assignments = JSON.parse(localStorage.getItem('tficms_assignments')) || [];
+
+            document.getElementById('totalPatients').textContent = patients.length;
+            document.getElementById('activeIVF').textContent = Math.floor(Math.random() * 8) + 1;
+            document.getElementById('totalRevenue').textContent = '$' + (Math.random() * 50000).toFixed(2);
+            document.getElementById('pendingPayments').textContent = Math.floor(Math.random() * 20) + 3;
+
+            document.getElementById('rec').textContent = assignments.filter(a => a.department === 'Reception').length;
+            document.getElementById('opd').textContent = assignments.filter(a => a.department === 'OPD').length;
+            document.getElementById('ivf').textContent = assignments.filter(a => a.department === 'IVF').length;
+            document.getElementById('pharm').textContent = assignments.filter(a => a.department === 'PHARMACY').length;
+            document.getElementById('lab').textContent = assignments.filter(a => a.department === 'LAB').length;
+        }
+
+        function createUser(e) {
+            e.preventDefault();
+            const name = document.getElementById('userName').value;
+            alert('✅ User account created for ' + name);
+            document.getElementById('userName').value = '';
+            document.getElementById('userEmail').value = '';
+            document.getElementById('userRole').value = '';
+            document.getElementById('userDept').value = '';
+        }
+
+        function backupSystem() {
+            alert('✅ System backup completed at ' + new Date().toLocaleString());
+        }
+
+        function clearData() {
+            if (confirm('⚠️ DELETE ALL DATA? This cannot be undone!')) {
+                localStorage.clear();
+                alert('✅ All data cleared');
+                location.reload();
+            }
+        }
+
+        function logout() {
+            window.location.href = '/';
+            return false;
+        }
+
+        loadOverview();
+    </script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        .navbar h1 { font-size: 24px; }
+        .nav-links { display: flex; gap: 15px; flex-wrap: wrap; }
+        .nav-links a { color: white; text-decoration: none; padding: 8px 16px; border-radius: 5px; transition: background 0.3s; font-size: 13px; }
+        .nav-links a:hover { background: rgba(255, 255, 255, 0.2); }
+        .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-size: 13px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .header { margin-bottom: 30px; }
+        .header h2 { color: #333; font-size: 28px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; }
+        .card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
+        .card-icon { font-size: 40px; margin-bottom: 15px; }
+        .card h3 { color: #333; font-size: 16px; margin-bottom: 10px; }
+        .card-stat { font-size: 32px; font-weight: bold; color: #667eea; margin-bottom: 10px; }
+        .card p { color: #666; font-size: 13px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏥 TFICMS</h1>
+        <div style="display: flex; gap: 20px; align-items: center;">
+            <div class="nav-links">
+                <a href="/dashboard/">Dashboard</a>
+                <a href="/patients/">Patients</a>
+                <a href="/appointments/">Appointments</a>
+                <a href="/staff/">Staff</a>
+                <a href="/reports/">Reports</a>
+                <a href="/finance/">Finance</a>
+                <a href="/settings/">Settings</a>
+            </div>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2>📊 System Reports</h2>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon">👥</div>
+                <h3>Total Patients</h3>
+                <div class="card-stat" id="totalPatients">0</div>
+                <p>Registered in the system</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">📅</div>
+                <h3>Total Appointments</h3>
+                <div class="card-stat" id="totalAppointments">0</div>
+                <p>All appointments scheduled</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">✅</div>
+                <h3>Completed</h3>
+                <div class="card-stat" id="completedAppointments">0</div>
+                <p>Completed appointments</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⚕️</div>
+                <h3>Success Rate</h3>
+                <div class="card-stat" id="successRate">0%</div>
+                <p>Treatment success rate</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">👨‍⚕️</div>
+                <h3>Staff Members</h3>
+                <div class="card-stat" id="staffCount">0</div>
+                <p>Active staff in clinic</p>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">💰</div>
+                <h3>Net Revenue</h3>
+                <div class="card-stat" id="revenue">$0</div>
+                <p>Income minus expenses</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function loadReports() {
+            try {
+                const response = await fetch('/api/reports/');
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('totalPatients').textContent = data.totalPatients;
+                    document.getElementById('totalAppointments').textContent = data.totalAppointments;
+                    document.getElementById('completedAppointments').textContent = data.completedAppointments;
+                    document.getElementById('successRate').textContent = data.successRate + '%';
+                    document.getElementById('staffCount').textContent = data.staffCount;
+                    document.getElementById('revenue').textContent = '$' + parseFloat(data.revenue).toFixed(2);
+                }
+            } catch (error) {
+                console.error('Error loading reports:', error);
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout/', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                alert('Logout failed');
+            }
+        }
+
+        loadReports();
+    </script>
+</body>
+</html>

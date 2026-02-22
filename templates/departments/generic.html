@@ -1,0 +1,274 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Department - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { margin: 0; flex-grow: 1; }
+        .navbar-right { display: flex; gap: 10px; }
+        .btn-nav { background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; text-decoration: none; font-weight: bold; display: inline-block; }
+        .btn-nav:hover { background: rgba(255,255,255,0.5); }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; }
+        .tab-content.active { display: block; }
+        .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #667eea; }
+        .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #218838; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .patient-card { background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 10px 0; border-radius: 5px; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+        .btn-small { padding: 6px 12px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 id="deptTitle">Department</h1>
+        <div class="navbar-right">
+            <a href="/" class="btn-nav">🏠 Home</a>
+            <button class="btn-nav" onclick="logout()">🚪 Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('patients')">👥 Assigned Patients</button>
+            <button class="tab-btn" onclick="switchTab('assign')">✉️ Assign Patient</button>
+            <button class="tab-btn" onclick="switchTab('reassign')">🔄 Reassign Patient</button>
+        </div>
+
+        <!-- PATIENTS TAB -->
+        <div id="patients" class="tab-content active">
+            <h2>Patients Assigned to This Department</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="totalAssigned">0</div>
+                    <div class="stat-label">Total Assigned</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="pending">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            <div id="patientsList"></div>
+        </div>
+
+        <!-- ASSIGN TAB -->
+        <div id="assign" class="tab-content">
+            <h2>Assign Patient from Reception</h2>
+            <div id="assignMsg"></div>
+            <form onsubmit="assignPatientFromReception(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Select Patient *</label>
+                        <select id="patientToAssign" required>
+                            <option value="">-- SELECT --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Staff Member *</label>
+                        <input type="text" id="staffToAssign" placeholder="Doctor/Staff name" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Notes</label>
+                    <textarea id="notesAssign" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn">✅ Assign</button>
+            </form>
+        </div>
+
+        <!-- REASSIGN TAB -->
+        <div id="reassign" class="tab-content">
+            <h2>Reassign Patient to Another Department</h2>
+            <div id="reassignMsg"></div>
+            <form onsubmit="reassignPatient(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Select Patient from My List *</label>
+                        <select id="patientToReassign" required>
+                            <option value="">-- SELECT --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Reassign to Department *</label>
+                        <select id="deptToReassign" required>
+                            <option value="">-- SELECT --</option>
+                            <option value="OPD">OPD</option>
+                            <option value="FERTILITY">Fertility</option>
+                            <option value="IVF">IVF</option>
+                            <option value="PHARMACY">Pharmacy</option>
+                            <option value="LAB">Lab</option>
+                            <option value="EMBRYOLOGY">Embryology</option>
+                            <option value="ANDROLOGY">Andrology</option>
+                            <option value="ULTRASOUND">Ultrasound</option>
+                            <option value="NURSING">Nursing</option>
+                            <option value="COUNSELING">Counseling</option>
+                            <option value="FINANCE">Finance</option>
+                            <option value="CRYOBANK">Cryobank</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Reason for Reassignment *</label>
+                    <textarea id="reasonReassign" rows="2" required></textarea>
+                </div>
+                <button type="submit" class="btn">🔄 Reassign</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const deptName = new URLSearchParams(window.location.search).get('dept') || 'Department';
+        document.getElementById('deptTitle').textContent = deptName + ' Department';
+
+        let patients = JSON.parse(localStorage.getItem('tficms_patients')) || [];
+        let assignments = JSON.parse(localStorage.getItem('tficms_assignments')) || [];
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'patients') loadMyPatients();
+            if (tab === 'assign') loadUnassignedPatients();
+            if (tab === 'reassign') loadMyPatientsForReassign();
+        }
+
+        function loadMyPatients() {
+            const myPatients = assignments.filter(a => a.department === deptName);
+            let html = '';
+
+            if (myPatients.length === 0) {
+                html = '<p style="text-align: center; color: #999; padding: 40px;">No patients assigned to this department</p>';
+            } else {
+                myPatients.forEach(p => {
+                    html += '<div class="patient-card">' +
+                        '<strong>' + p.patientName + '</strong><br>' +
+                        'ID: ' + p.patientId + '<br>' +
+                        'Phone: ' + p.patientPhone + '<br>' +
+                        'Staff: ' + p.staff + '<br>' +
+                        'Assigned: ' + p.assignedDate + '<br>' +
+                        '<div class="action-buttons">' +
+                        '<button class="btn btn-small" onclick="alert(\'View EMR for ' + p.patientName + '\')">👁️ View EMR</button>' +
+                        '<button class="btn btn-small" onclick="setReassignPatient(\'' + p.patientId + '\')">🔄 Reassign</button>' +
+                        '</div>' +
+                        '</div>';
+                });
+            }
+
+            document.getElementById('patientsList').innerHTML = html;
+            document.getElementById('totalAssigned').textContent = myPatients.length;
+            document.getElementById('pending').textContent = myPatients.length;
+        }
+
+        function loadUnassignedPatients() {
+            let html = '<option value="">-- SELECT --</option>';
+            patients.forEach(p => {
+                html += '<option value="' + p.id + '">' + p.firstName + ' ' + p.lastName + ' (' + p.id + ')</option>';
+            });
+            document.getElementById('patientToAssign').innerHTML = html;
+        }
+
+        function loadMyPatientsForReassign() {
+            const myPatients = assignments.filter(a => a.department === deptName);
+            let html = '<option value="">-- SELECT --</option>';
+            myPatients.forEach(p => {
+                html += '<option value="' + p.patientId + '">' + p.patientName + ' (' + p.patientId + ')</option>';
+            });
+            document.getElementById('patientToReassign').innerHTML = html;
+        }
+
+        function setReassignPatient(patientId) {
+            document.getElementById('patientToReassign').value = patientId;
+            switchTab('reassign');
+        }
+
+        function assignPatientFromReception(e) {
+            e.preventDefault();
+            const patientId = document.getElementById('patientToAssign').value;
+            const staff = document.getElementById('staffToAssign').value;
+            const notes = document.getElementById('notesAssign').value;
+
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) return;
+
+            const assignment = {
+                id: 'ASN-' + Date.now(),
+                patientId: patientId,
+                patientName: patient.firstName + ' ' + patient.lastName,
+                patientEmail: patient.email,
+                patientPhone: patient.phone,
+                department: deptName,
+                staff: staff,
+                notes: notes,
+                assignedDate: new Date().toLocaleString(),
+                status: 'Pending'
+            };
+
+            assignments.push(assignment);
+            localStorage.setItem('tficms_assignments', JSON.stringify(assignments));
+
+            document.getElementById('assignMsg').innerHTML = '<div class="success">✅ ' + patient.firstName + ' assigned to ' + deptName + '</div>';
+            document.getElementById('patientToAssign').value = '';
+            document.getElementById('staffToAssign').value = '';
+            document.getElementById('notesAssign').value = '';
+        }
+
+        function reassignPatient(e) {
+            e.preventDefault();
+            const patientId = document.getElementById('patientToReassign').value;
+            const newDept = document.getElementById('deptToReassign').value;
+            const reason = document.getElementById('reasonReassign').value;
+
+            const assignment = assignments.find(a => a.patientId === patientId && a.department === deptName);
+            if (!assignment) return;
+
+            // Remove from current dept
+            assignments = assignments.filter(a => !(a.patientId === patientId && a.department === deptName));
+
+            // Add to new dept
+            const newAssignment = {
+                id: 'ASN-' + Date.now(),
+                patientId: patientId,
+                patientName: assignment.patientName,
+                patientEmail: assignment.patientEmail,
+                patientPhone: assignment.patientPhone,
+                department: newDept,
+                staff: '',
+                notes: 'Reassigned from ' + deptName + ': ' + reason,
+                assignedDate: new Date().toLocaleString(),
+                status: 'Pending'
+            };
+
+            assignments.push(newAssignment);
+            localStorage.setItem('tficms_assignments', JSON.stringify(assignments));
+
+            document.getElementById('reassignMsg').innerHTML = '<div class="success">✅ ' + assignment.patientName + ' reassigned to ' + newDept + '</div>';
+            document.getElementById('patientToReassign').value = '';
+            document.getElementById('deptToReassign').value = '';
+            document.getElementById('reasonReassign').value = '';
+            loadMyPatients();
+        }
+
+        function logout() {
+            window.location.href = '/';
+        }
+
+        loadMyPatients();
+    </script>
+</body>
+</html>

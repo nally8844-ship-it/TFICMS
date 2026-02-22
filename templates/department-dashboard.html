@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Dashboard - TFICMS</title>
+    <style>
+        body { font-family: Arial; background: #f5f5f5; margin: 0; padding: 20px; }
+        .loading { text-align: center; padding: 40px; font-size: 18px; color: #666; }
+        .error { color: #721c24; background: #f8d7da; padding: 20px; border-radius: 10px; text-align: center; }
+        a { color: #667eea; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div id="content" class="loading">Loading department dashboard...</div>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const departmentId = urlParams.get('dept_id') || sessionStorage.getItem('department_id');
+        const deptName = sessionStorage.getItem('department_name') || 'Unknown';
+
+        // Map department IDs to their page routes (WITHOUT .html)
+        const departmentPages = {
+            '15': '/reception_real/',      // Reception
+            '14': '/opd_real/',            // OPD
+            '6': '/fertility_real/',       // Fertility
+            '1': '/embryology_real/',      // Embryology
+            '2': '/andrology_real/',       // Andrology
+            '5': '/ivf_real/',             // IVF
+            '3': '/ultrasound_real/',      // Ultrasound
+            '8': '/nursing_real/',         // Nursing
+            '9': '/pharmacy_real/',        // Pharmacy
+            '10': '/finance_real/',        // Finance
+            '7': '/lab_real/',             // Lab
+            '11': '/cryobank_real/',       // Cryobank
+            '12': '/hr_real/',             // HR
+            '13': '/admin_real/',          // Admin
+            '4': '/counseling_real/'       // Counseling
+        };
+
+        if (!departmentId || !departmentPages[departmentId]) {
+            document.getElementById('content').innerHTML = `
+                <div class="error">
+                    <h3>⚠️ Invalid Department</h3>
+                    <p>Department ID: ${departmentId}</p>
+                    <p><a href="/departments/">Return to Department Login</a></p>
+                </div>
+            `;
+        } else {
+            // Redirect to the correct department page (WITHOUT .html)
+            const pageUrl = departmentPages[departmentId];
+            console.log('Redirecting to:', pageUrl);
+            window.location.href = pageUrl;
+        }
+    </script>
+</body>
+</html>

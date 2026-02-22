@@ -1,0 +1,280 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OPD - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 15px 30px; display: flex; justify-content: space-between; }
+        .navbar h1 { margin: 0; }
+        .navbar-right { display: flex; gap: 10px; }
+        .btn-nav { background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; text-decoration: none; font-weight: bold; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; cursor: pointer; border-radius: 5px; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; background: white; padding: 20px; border-radius: 10px; }
+        .tab-content.active { display: block; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 28px; font-weight: bold; color: #667eea; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .btn { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 5px; margin: 10px 0; }
+        .patient-card { background: #f8f9fa; padding: 15px; border-left: 4px solid #667eea; margin: 10px 0; border-radius: 5px; }
+        .action-btn { padding: 6px 12px; font-size: 12px; margin-right: 5px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏥 OPD - Doctor Consultation, Diagnosis & Referrals</h1>
+        <div class="navbar-right">
+            <a href="/" class="btn-nav">🏠 Home</a>
+            <button class="btn-nav" onclick="logout()">🚪 Logout</button>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('waiting')">�� Waiting Patients</button>
+            <button class="tab-btn" onclick="switchTab('consultation')">🩺 Record Consultation</button>
+            <button class="tab-btn" onclick="switchTab('orders')">📋 Order Tests/Referrals</button>
+            <button class="tab-btn" onclick="switchTab('prescribe')">💊 Prescribe Medicine</button>
+        </div>
+
+        <div id="waiting" class="tab-content active">
+            <h2>Patients Waiting for Consultation</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-value" id="waiting">0</div>
+                    <div class="stat-label">Waiting</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="consulting">0</div>
+                    <div class="stat-label">Consulting</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="referred">0</div>
+                    <div class="stat-label">Referred</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="completed">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+            </div>
+            <div id="waitingList"></div>
+        </div>
+
+        <div id="consultation" class="tab-content">
+            <h2>Record Consultation & Diagnosis</h2>
+            <div id="consMsg"></div>
+            <form onsubmit="recordConsultation(event)">
+                <div class="form-group">
+                    <label>Patient *</label>
+                    <select id="consPatient" required>
+                        <option value="">-- SELECT --</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Chief Complaints *</label>
+                    <textarea id="symptoms" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Diagnosis *</label>
+                    <textarea id="diagnosis" rows="2" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Clinical Notes</label>
+                    <textarea id="notes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn">✓ Record Consultation</button>
+            </form>
+        </div>
+
+        <div id="orders" class="tab-content">
+            <h2>Order Lab Tests / Refer to Other Departments</h2>
+            <div id="orderMsg"></div>
+            <form onsubmit="orderTestOrRefer(event)">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Patient *</label>
+                        <select id="orderPatient" required>
+                            <option value="">-- SELECT --</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Type *</label>
+                        <select id="orderType" required onchange="updateOrderOptions()">
+                            <option value="">-- SELECT --</option>
+                            <option value="test">Lab Test</option>
+                            <option value="refer">Refer to Department</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="testOptions" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Test Type *</label>
+                            <select id="testType">
+                                <option value="">-- SELECT --</option>
+                                <option value="Hormonal">Hormonal Profile</option>
+                                <option value="Semen Analysis">Semen Analysis</option>
+                                <option value="Blood Test">Blood Test</option>
+                                <option value="Ultrasound">Ultrasound</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="referOptions" style="display: none;">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Refer To *</label>
+                            <select id="referDept">
+                                <option value="">-- SELECT --</option>
+                                <option value="FERTILITY">Fertility Consultation</option>
+                                <option value="IVF">IVF Department</option>
+                                <option value="LAB">Laboratory</option>
+                                <option value="ULTRASOUND">Ultrasound</option>
+                                <option value="COUNSELING">Counseling</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Indication/Reason *</label>
+                    <textarea id="indication" rows="2" required></textarea>
+                </div>
+                <button type="submit" class="btn">✓ Submit Order/Referral</button>
+            </form>
+        </div>
+
+        <div id="prescribe" class="tab-content">
+            <h2>Prescribe Medication</h2>
+            <div id="rxMsg"></div>
+            <form onsubmit="prescribeMedicine(event)">
+                <div class="form-group">
+                    <label>Patient *</label>
+                    <select id="rxPatient" required>
+                        <option value="">-- SELECT --</option>
+                    </select>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Medicine Name *</label>
+                        <input type="text" id="medicine" placeholder="e.g., Gonal-F" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Dosage *</label>
+                        <input type="text" id="dosage" placeholder="e.g., 75 IU" required>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Quantity *</label>
+                        <input type="number" id="quantity" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Frequency *</label>
+                        <select id="frequency" required>
+                            <option value="">-- SELECT --</option>
+                            <option value="Once Daily">Once Daily</option>
+                            <option value="Twice Daily">Twice Daily</option>
+                            <option value="Thrice Daily">Thrice Daily</option>
+                            <option value="As Needed">As Needed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Instructions *</label>
+                    <textarea id="instructions" rows="2" required></textarea>
+                </div>
+                <button type="submit" class="btn">💊 Issue Prescription</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let patients = JSON.parse(localStorage.getItem('tficms_patients')) || [];
+        let assignments = JSON.parse(localStorage.getItem('tficms_assignments')) || [];
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tab).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tab === 'waiting') loadWaitingPatients();
+            if (tab === 'consultation' || tab === 'orders' || tab === 'prescribe') loadPatientSelects();
+        }
+
+        function loadWaitingPatients() {
+            const opdPatients = assignments.filter(a => a.department === 'OPD');
+            let html = '';
+            
+            if (opdPatients.length === 0) {
+                html = '<p style="text-align: center; color: #999; padding: 40px;">No patients assigned</p>';
+            } else {
+                opdPatients.forEach(p => {
+                    html += '<div class="patient-card">' +
+                        '<strong>' + p.patientName + '</strong> (Queue #' + p.queueNumber + ')<br>' +
+                        'ID: ' + p.patientId + ' | Phone: ' + p.patientPhone + '<br>' +
+                        'Scheduled: ' + p.appointmentDate + '<br>' +
+                        '<button class="btn action-btn" onclick="alert(\'View EMR for ' + p.patientName + '\')">👁️ View EMR</button>' +
+                        '<button class="btn action-btn" onclick="alert(\'Start Consultation\')">🩺 Start</button>' +
+                        '</div>';
+                });
+            }
+            
+            document.getElementById('waitingList').innerHTML = html;
+            document.getElementById('waiting').textContent = opdPatients.length;
+        }
+
+        function loadPatientSelects() {
+            const opdPatients = assignments.filter(a => a.department === 'OPD');
+            let html = '<option value="">-- SELECT --</option>';
+            
+            opdPatients.forEach(p => {
+                html += '<option value="' + p.patientId + '">' + p.patientName + ' (' + p.patientId + ')</option>';
+            });
+            
+            document.getElementById('consPatient').innerHTML = html;
+            document.getElementById('orderPatient').innerHTML = html;
+            document.getElementById('rxPatient').innerHTML = html;
+        }
+
+        function updateOrderOptions() {
+            const type = document.getElementById('orderType').value;
+            document.getElementById('testOptions').style.display = type === 'test' ? 'block' : 'none';
+            document.getElementById('referOptions').style.display = type === 'refer' ? 'block' : 'none';
+        }
+
+        function recordConsultation(e) {
+            e.preventDefault();
+            document.getElementById('consMsg').innerHTML = '<div class="success">✅ Consultation recorded</div>';
+        }
+
+        function orderTestOrRefer(e) {
+            e.preventDefault();
+            const type = document.getElementById('orderType').value;
+            const desc = type === 'test' ? document.getElementById('testType').value : document.getElementById('referDept').value;
+            document.getElementById('orderMsg').innerHTML = '<div class="success">✅ Order created: ' + desc + '</div>';
+        }
+
+        function prescribeMedicine(e) {
+            e.preventDefault();
+            const medicine = document.getElementById('medicine').value;
+            document.getElementById('rxMsg').innerHTML = '<div class="success">✅ Prescription issued: ' + medicine + '</div>';
+        }
+
+        function logout() {
+            window.location.href = '/';
+        }
+
+        loadWaitingPatients();
+    </script>
+</body>
+</html>

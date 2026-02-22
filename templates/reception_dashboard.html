@@ -1,0 +1,336 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reception - Patient Registration & Check-in</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
+        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .header { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-btn { background: #ddd; color: #333; border: none; padding: 12px 25px; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .form-section { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: #333; font-weight: 600; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .btn { background: #667eea; color: white; padding: 12px 25px; border: none; border-radius: 5px; cursor: pointer; font-weight: 600; transition: 0.3s; }
+        .btn:hover { background: #555dd4; }
+        .success { color: #28a745; padding: 15px; background: #d4edda; border-radius: 5px; margin-bottom: 20px; }
+        .queue-board { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .queue-item { padding: 15px; background: #f8f9fa; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .queue-number { background: #667eea; color: white; padding: 10px 15px; border-radius: 50%; font-weight: bold; text-align: center; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        thead { background: #f8f9fa; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .badge-checkin { background: #d4edda; color: #155724; }
+        .badge-pending { background: #fff3cd; color: #856404; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏢 Reception - Patient Management System</h1>
+        <button class="logout-btn" onclick="logout()" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer;">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h2>👥 Patient Registration & Check-in System</h2>
+            <p>Welcome to Tunajali Fertility Clinic Reception - Manage patient registration, appointments, and check-in/check-out</p>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab('new-patient')">➕ New Patient Registration</button>
+            <button class="tab-btn" onclick="switchTab('checkin')">✓ Patient Check-in</button>
+            <button class="tab-btn" onclick="switchTab('queue')">🗣️ Queue Management</button>
+            <button class="tab-btn" onclick="switchTab('appointments')">📅 Appointment Scheduling</button>
+        </div>
+
+        <!-- New Patient Registration -->
+        <div id="new-patient" class="tab-content active">
+            <div class="form-section">
+                <h3>📝 New Patient Registration Form</h3>
+                <form id="newPatientForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="text" id="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Birth *</label>
+                            <input type="date" id="dob" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender *</label>
+                            <select id="gender" required>
+                                <option>Select Gender</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                                <option value="O">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Address</label>
+                        <textarea id="address" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Infertility Type (if any) *</label>
+                        <select id="infertilityType" required>
+                            <option>Select Type</option>
+                            <option value="primary">Primary Infertility (No previous children)</option>
+                            <option value="secondary">Secondary Infertility (Had children before)</option>
+                            <option value="male-factor">Male Factor Infertility</option>
+                            <option value="female-factor">Female Factor Infertility</option>
+                            <option value="unexplained">Unexplained Infertility</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn">✓ Register Patient & Create EMR</button>
+                </form>
+                <div id="newPatientSuccess"></div>
+            </div>
+        </div>
+
+        <!-- Patient Check-in -->
+        <div id="checkin" class="tab-content">
+            <div class="form-section">
+                <h3>✓ Patient Check-in</h3>
+                <div class="form-group">
+                    <label>Search Patient by Phone/Email</label>
+                    <input type="text" id="searchPatient" placeholder="Enter phone or email">
+                </div>
+                <button class="btn" onclick="searchPatient()">🔍 Find Patient</button>
+                
+                <div id="patientSearchResult" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <!-- Queue Management -->
+        <div id="queue" class="tab-content">
+            <div class="queue-board">
+                <h3>🗣️ Current Queue</h3>
+                <div id="queueList">
+                    <p style="color: #999; text-align: center; padding: 40px;">No patients in queue</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Appointments -->
+        <div id="appointments" class="tab-content">
+            <div class="form-section">
+                <h3>📅 Schedule New Appointment</h3>
+                <div class="form-group">
+                    <label>Patient Name *</label>
+                    <input type="text" id="apptPatient" placeholder="Enter patient name" required>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Appointment Date *</label>
+                        <input type="date" id="apptDate" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Appointment Time *</label>
+                        <input type="time" id="apptTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Department *</label>
+                        <select id="apptDept" required>
+                            <option>Select Department</option>
+                            <option value="OPD">OPD (Doctor Consultation)</option>
+                            <option value="Fertility">Fertility Consultation</option>
+                            <option value="Ultrasound">Ultrasound Scan</option>
+                            <option value="Lab">Laboratory Tests</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Doctor/Specialist</label>
+                        <input type="text" id="apptDoctor" placeholder="Assigned doctor">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>Send SMS Reminder?</label>
+                    <input type="checkbox" id="sendSMS" checked> Send SMS confirmation to patient
+                </div>
+                <button class="btn" onclick="scheduleAppointment()">📅 Schedule Appointment</button>
+            </div>
+
+            <div class="form-section">
+                <h3>📋 Upcoming Appointments</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Patient Name</th>
+                            <th>Date & Time</th>
+                            <th>Department</th>
+                            <th>Doctor</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="appointmentsList">
+                        <tr><td colspan="5" style="text-align: center; padding: 30px; color: #999;">No appointments scheduled</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let patientsDB = [];
+        let queueDB = [];
+        let appointmentsDB = [];
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        document.getElementById('newPatientForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const patient = {
+                id: Date.now(),
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                dob: document.getElementById('dob').value,
+                gender: document.getElementById('gender').value,
+                address: document.getElementById('address').value,
+                infertilityType: document.getElementById('infertilityType').value,
+                registrationDate: new Date().toLocaleDateString(),
+                emrId: 'EMR-' + Date.now(),
+                status: 'Registered'
+            };
+            
+            patientsDB.push(patient);
+            localStorage.setItem('patients', JSON.stringify(patientsDB));
+            
+            document.getElementById('newPatientSuccess').innerHTML = `
+                <div class="success">
+                    ✓ Patient registered successfully!<br>
+                    <strong>Patient ID:</strong> ${patient.emrId}<br>
+                    <strong>Name:</strong> ${patient.firstName} ${patient.lastName}<br>
+                    <strong>EMR Created:</strong> ${patient.registrationDate}
+                </div>
+            `;
+            
+            document.getElementById('newPatientForm').reset();
+            
+            // Send SMS notification (simulated)
+            console.log(`SMS sent to ${patient.phone}: Welcome to Tunajali Fertility Clinic. Your Patient ID is ${patient.emrId}`);
+        });
+
+        function searchPatient() {
+            const search = document.getElementById('searchPatient').value;
+            patientsDB = JSON.parse(localStorage.getItem('patients')) || [];
+            
+            const patient = patientsDB.find(p => p.phone === search || p.email === search);
+            
+            if (patient) {
+                const queueNum = Math.floor(Math.random() * 100) + 1;
+                queueDB.push({...patient, queueNumber: queueNum, checkInTime: new Date().toLocaleTimeString()});
+                localStorage.setItem('queue', JSON.stringify(queueDB));
+                updateQueueBoard();
+                
+                document.getElementById('patientSearchResult').innerHTML = `
+                    <div class="success">
+                        ✓ Patient checked in successfully!<br>
+                        <strong>Name:</strong> ${patient.firstName} ${patient.lastName}<br>
+                        <strong>Queue Number:</strong> <span style="font-size: 24px; font-weight: bold;">${queueNum}</span><br>
+                        <strong>Patient ID:</strong> ${patient.emrId}<br>
+                        <strong>Check-in Time:</strong> ${new Date().toLocaleTimeString()}<br>
+                        <strong>Assigned to:</strong> OPD - Doctor Consultation
+                    </div>
+                `;
+            } else {
+                document.getElementById('patientSearchResult').innerHTML = '<div style="color: #dc3545; padding: 15px; background: #f8d7da; border-radius: 5px;">Patient not found. Please register first.</div>';
+            }
+        }
+
+        function updateQueueBoard() {
+            queueDB = JSON.parse(localStorage.getItem('queue')) || [];
+            const queueHTML = queueDB.map(p => `
+                <div class="queue-item">
+                    <div class="queue-number">${p.queueNumber}</div>
+                    <div>
+                        <strong>${p.firstName} ${p.lastName}</strong><br>
+                        Check-in: ${p.checkInTime}
+                    </div>
+                    <span class="badge badge-checkin">In Queue</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('queueList').innerHTML = queueHTML || '<p style="color: #999; text-align: center; padding: 40px;">No patients in queue</p>';
+        }
+
+        function scheduleAppointment() {
+            const appointment = {
+                id: Date.now(),
+                patient: document.getElementById('apptPatient').value,
+                date: document.getElementById('apptDate').value,
+                time: document.getElementById('apptTime').value,
+                department: document.getElementById('apptDept').value,
+                doctor: document.getElementById('apptDoctor').value,
+                smsReminder: document.getElementById('sendSMS').checked,
+                status: 'Scheduled'
+            };
+            
+            appointmentsDB.push(appointment);
+            localStorage.setItem('appointments', JSON.stringify(appointmentsDB));
+            
+            alert(`✓ Appointment scheduled for ${appointment.patient}\nDate: ${appointment.date} at ${appointment.time}\n${appointment.smsReminder ? 'SMS reminder will be sent 24 hours before.' : ''}`);
+            
+            loadAppointments();
+            document.getElementById('apptPatient').value = '';
+            document.getElementById('apptDate').value = '';
+            document.getElementById('apptTime').value = '';
+        }
+
+        function loadAppointments() {
+            appointmentsDB = JSON.parse(localStorage.getItem('appointments')) || [];
+            const html = appointmentsDB.length ? appointmentsDB.map(a => `
+                <tr>
+                    <td>${a.patient}</td>
+                    <td>${a.date} ${a.time}</td>
+                    <td>${a.department}</td>
+                    <td>${a.doctor}</td>
+                    <td><span class="badge badge-pending">Scheduled</span></td>
+                </tr>
+            `).join('') : '<tr><td colspan="5" style="text-align: center; padding: 30px; color: #999;">No appointments scheduled</td></tr>';
+            
+            document.getElementById('appointmentsList').innerHTML = html;
+        }
+
+        function logout() {
+            if(confirm('Are you sure you want to logout?')) {
+                window.location.href = '/';
+            }
+        }
+
+        // Load initial data
+        patientsDB = JSON.parse(localStorage.getItem('patients')) || [];
+        updateQueueBoard();
+        loadAppointments();
+    </script>
+</body>
+</html>

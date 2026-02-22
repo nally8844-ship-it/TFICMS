@@ -1,0 +1,460 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department Dashboard - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; }
+        .navbar h1 { font-size: 24px; }
+        .logout-btn { background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .section { background: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; margin-right: 5px; }
+        .btn:hover { background: #555dd4; }
+        .btn-reassign { background: #28a745; }
+        .btn-reassign:hover { background: #218838; }
+        .btn-view { background: #17a2b8; }
+        .btn-view:hover { background: #138496; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #155724; }
+        .info { background: #d1ecf1; color: #0c5460; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #0c5460; }
+        .patient-card { background: #f8f9fa; padding: 20px; border-left: 4px solid #667eea; margin-bottom: 15px; border-radius: 5px; }
+        .patient-header { display: flex; justify-content: space-between; align-items: start; margin-bottom: 15px; }
+        .patient-info { flex: 1; }
+        .patient-info h3 { color: #333; margin-bottom: 5px; }
+        .patient-info p { color: #666; font-size: 14px; margin-bottom: 5px; }
+        .patient-actions { display: flex; gap: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: bold; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #d4edda; color: #155724; }
+        .badge-urgent { background: #f8d7da; color: #721c24; }
+        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: 30px; border-radius: 10px; width: 100%; max-width: 600px; max-height: 80vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .modal-header h3 { color: #333; }
+        .close-btn { background: #ddd; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-label { font-size: 12px; color: #666; font-weight: bold; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #667eea; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 id="deptTitle">Department Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'assigned-patients')">📥 Patients Assigned to Me</button>
+            <button class="tab-btn" onclick="switchTab(event, 'view-patient')">👁️ View Patient Details</button>
+            <button class="tab-btn" onclick="switchTab(event, 'reassign')">✉️ Reassign to Other Department</button>
+            <button class="tab-btn" onclick="switchTab(event, 'work-history')">📋 Work History</button>
+        </div>
+
+        <!-- Assigned Patients Tab -->
+        <div id="assigned-patients" class="tab-content active">
+            <div class="section">
+                <h2>📥 Patients Assigned to Me</h2>
+                <div class="info">ℹ️ These patients have been sent to your department. Click "View Details" to see full patient info or "Reassign" to send to another department.</div>
+                
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-label">Assigned to Me</div>
+                        <div class="stat-value" id="totalAssigned">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">In Progress</div>
+                        <div class="stat-value" id="inProgress">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Completed</div>
+                        <div class="stat-value" id="completedCount">0</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Urgent</div>
+                        <div class="stat-value" id="urgentCount">0</div>
+                    </div>
+                </div>
+
+                <div id="assignedPatientsList"></div>
+            </div>
+        </div>
+
+        <!-- View Patient Details Tab -->
+        <div id="view-patient" class="tab-content">
+            <div class="section">
+                <h2>👁️ View Patient Details & EMR</h2>
+                <div class="form-group">
+                    <label>Search Patient by Name or ID</label>
+                    <input type="text" id="searchPatient" placeholder="Enter patient name or ID" onkeyup="searchPatients()">
+                </div>
+                <div id="patientSearchResults"></div>
+            </div>
+        </div>
+
+        <!-- Reassign Tab -->
+        <div id="reassign" class="tab-content">
+            <div class="section">
+                <h2>✉️ Reassign Patient to Another Department</h2>
+                <div id="reassignMsg"></div>
+                <form onsubmit="reassignPatient(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Patient to Reassign *</label>
+                            <select id="reassignPatientId" required>
+                                <option value="">-- Select Patient --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Target Department *</label>
+                            <select id="reassignDept" required>
+                                <option value="">-- SELECT DEPARTMENT --</option>
+                                <option value="Reception">🏢 Reception</option>
+                                <option value="OPD">🏥 Outpatient Department (OPD)</option>
+                                <option value="Fertility">📋 Fertility Consultation Unit</option>
+                                <option value="IVF">🏥 IVF & ART Department</option>
+                                <option value="Andrology">🧬 Andrology Laboratory</option>
+                                <option value="Embryology">🧫 Embryology Laboratory</option>
+                                <option value="Ultrasound">🖼️ Ultrasound & Imaging</option>
+                                <option value="Nursing">👩‍⚕️ Nursing Department</option>
+                                <option value="Pharmacy">💊 Pharmacy Department</option>
+                                <option value="Finance">💰 Finance & Billing</option>
+                                <option value="Lab">🧪 General Laboratory</option>
+                                <option value="Counseling">💬 Counseling & Psychology</option>
+                                <option value="Cryobank">❄️ Cryobank Management</option>
+                                <option value="HR">👥 Human Resources</option>
+                                <option value="Admin">📊 Admin & Management</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Assigned to (Doctor/Staff Name) *</label>
+                            <input type="text" id="reassignStaff" placeholder="Doctor or staff member name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="reassignPriority">
+                                <option value="Normal">Normal</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Reason for Referral / Clinical Notes</label>
+                        <textarea id="reassignNotes" rows="3" placeholder="Why are you referring this patient to another department?"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-reassign">✉️ Reassign Patient to Department</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Work History Tab -->
+        <div id="work-history" class="tab-content">
+            <div class="section">
+                <h2>📋 Patient Work History (All Movements)</h2>
+                <table>
+                    <thead>
+                        <tr><th>Date/Time</th><th>Patient ID</th><th>Patient Name</th><th>From Department</th><th>To Department</th><th>Status</th><th>Assigned to</th></tr>
+                    </thead>
+                    <tbody id="workHistoryList"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Patient Details Modal -->
+    <div id="patientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Patient Details & EMR</h3>
+                <button class="close-btn" onclick="closePatientModal()">Close</button>
+            </div>
+            <div id="patientModalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        const currentDept = sessionStorage.getItem('department_name') || 'Department';
+        const currentUser = sessionStorage.getItem('username') || 'User';
+        document.getElementById('deptTitle').textContent = currentDept + ' Dashboard';
+
+        let assignments = JSON.parse(localStorage.getItem('patient_assignments')) || [];
+        let workflows = JSON.parse(localStorage.getItem('patient_workflows')) || [];
+        let patients = JSON.parse(localStorage.getItem('reception_patients')) || [];
+        let workHistory = JSON.parse(localStorage.getItem('work_history')) || [];
+
+        function switchTab(e, tabId) {
+            e.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            e.target.classList.add('active');
+            
+            if (tabId === 'assigned-patients') loadAssignedPatients();
+            if (tabId === 'reassign') loadReassignDropdown();
+            if (tabId === 'work-history') loadWorkHistory();
+        }
+
+        function loadAssignedPatients() {
+            const deptAssignments = assignments.filter(a => a.targetDept === currentDept);
+            
+            if (deptAssignments.length === 0) {
+                document.getElementById('assignedPatientsList').innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">No patients assigned to you yet</p>';
+                document.getElementById('totalAssigned').textContent = '0';
+                document.getElementById('inProgress').textContent = '0';
+                document.getElementById('completedCount').textContent = '0';
+                document.getElementById('urgentCount').textContent = '0';
+                return;
+            }
+
+            let html = '';
+            let inProgressCount = 0;
+            let completedCount = 0;
+            let urgentCount = 0;
+
+            deptAssignments.forEach(assignment => {
+                const patient = patients.find(p => p.id === assignment.patientId);
+                
+                if (assignment.status === 'In Progress') inProgressCount++;
+                if (assignment.status === 'Completed') completedCount++;
+                if (assignment.priority === 'Urgent') urgentCount++;
+
+                html += `
+                    <div class="patient-card">
+                        <div class="patient-header">
+                            <div class="patient-info">
+                                <h3>${assignment.patientName}</h3>
+                                <p><strong>Patient ID:</strong> ${assignment.patientId}</p>
+                                <p><strong>Phone:</strong> ${patient ? patient.phone : 'N/A'}</p>
+                                <p><strong>Assigned by Reception on:</strong> ${assignment.dateAssigned}</p>
+                                <p><strong>Priority:</strong> <span class="badge ${assignment.priority === 'Urgent' ? 'badge-urgent' : ''}">${assignment.priority}</span></p>
+                                <p><strong>Status:</strong> <span class="badge">${assignment.status}</span></p>
+                                <p><strong>Notes:</strong> ${assignment.notes || 'No notes'}</p>
+                            </div>
+                            <div class="patient-actions">
+                                <button class="btn btn-view" onclick="viewPatientDetails('${assignment.patientId}')">👁️ View EMR</button>
+                                <button class="btn btn-reassign" onclick="scrollToReassign('${assignment.patientId}')">✉️ Reassign</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('assignedPatientsList').innerHTML = html;
+            document.getElementById('totalAssigned').textContent = deptAssignments.length;
+            document.getElementById('inProgress').textContent = inProgressCount;
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('urgentCount').textContent = urgentCount;
+        }
+
+        function viewPatientDetails(patientId) {
+            const patient = patients.find(p => p.id === patientId);
+            if (!patient) {
+                alert('Patient not found');
+                return;
+            }
+
+            const html = `
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color: #333; margin-bottom: 15px;">Personal Information</h3>
+                    <table style="font-size: 14px;">
+                        <tr><td style="font-weight: bold; width: 200px;">Patient ID:</td><td>${patient.id}</td></tr>
+                        <tr><td style="font-weight: bold;">Full Name:</td><td>${patient.firstName} ${patient.lastName}</td></tr>
+                        <tr><td style="font-weight: bold;">Email:</td><td>${patient.email}</td></tr>
+                        <tr><td style="font-weight: bold;">Phone:</td><td>${patient.phone}</td></tr>
+                        <tr><td style="font-weight: bold;">Age:</td><td>${patient.age}</td></tr>
+                        <tr><td style="font-weight: bold;">Gender:</td><td>${patient.gender === 'M' ? 'Male' : 'Female'}</td></tr>
+                        <tr><td style="font-weight: bold;">Address:</td><td>${patient.address}</td></tr>
+                        <tr><td style="font-weight: bold;">Registration Date:</td><td>${patient.registrationDate}</td></tr>
+                        <tr><td style="font-weight: bold;">EMR Created:</td><td>${patient.emrCreated}</td></tr>
+                    </table>
+                </div>
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">
+                    <h3 style="color: #333; margin-bottom: 10px;">Available Actions</h3>
+                    <p style="color: #666; margin-bottom: 10px;">You can now:</p>
+                    <ul style="color: #666;">
+                        <li>Examine the patient</li>
+                        <li>Perform necessary procedures</li>
+                        <li>Add notes and findings</li>
+                        <li>Refer to another department if needed</li>
+                    </ul>
+                </div>
+            `;
+
+            document.getElementById('patientModalBody').innerHTML = html;
+            document.getElementById('patientModal').classList.add('show');
+        }
+
+        function closePatientModal() {
+            document.getElementById('patientModal').classList.remove('show');
+        }
+
+        function loadReassignDropdown() {
+            const deptAssignments = assignments.filter(a => a.targetDept === currentDept && a.status !== 'Completed');
+            
+            let options = '<option value="">-- Select Patient --</option>';
+            deptAssignments.forEach(a => {
+                options += `<option value="${a.patientId}">${a.patientName} (${a.patientId})</option>`;
+            });
+            
+            document.getElementById('reassignPatientId').innerHTML = options;
+        }
+
+        function reassignPatient(e) {
+            e.preventDefault();
+            
+            const patientId = document.getElementById('reassignPatientId').value;
+            const targetDept = document.getElementById('reassignDept').value;
+            const assignedStaff = document.getElementById('reassignStaff').value;
+            const priority = document.getElementById('reassignPriority').value;
+            const notes = document.getElementById('reassignNotes').value;
+
+            if (!patientId || !targetDept) {
+                alert('Please select both patient and target department');
+                return;
+            }
+
+            const patient = patients.find(p => p.id === patientId);
+            const oldAssignment = assignments.find(a => a.patientId === patientId);
+
+            // Create new assignment
+            const newAssignment = {
+                id: 'ASSIGN-' + Date.now(),
+                patientId: patientId,
+                patientName: patient.firstName + ' ' + patient.lastName,
+                targetDept: targetDept,
+                assignedStaff: assignedStaff,
+                priority: priority,
+                notes: notes,
+                dateAssigned: new Date().toLocaleString(),
+                status: 'Assigned',
+                referredFrom: currentDept
+            };
+
+            // Create workflow
+            const newWorkflow = {
+                patientId: patientId,
+                patientName: patient.firstName + ' ' + patient.lastName,
+                currentDept: targetDept,
+                currentTask: 'Awaiting Consultation',
+                status: 'Waiting',
+                lastUpdated: new Date().toLocaleString(),
+                assignedTo: assignedStaff,
+                notes: notes,
+                priority: priority,
+                referredFrom: currentDept
+            };
+
+            // Add to history
+            const historyEntry = {
+                timestamp: new Date().toLocaleString(),
+                patientId: patientId,
+                patientName: patient.firstName + ' ' + patient.lastName,
+                fromDept: currentDept,
+                toDept: targetDept,
+                referredBy: currentUser,
+                status: 'Transferred',
+                assignedTo: assignedStaff,
+                reason: notes
+            };
+
+            assignments.push(newAssignment);
+            workflows.push(newWorkflow);
+            workHistory.push(historyEntry);
+
+            localStorage.setItem('patient_assignments', JSON.stringify(assignments));
+            localStorage.setItem('patient_workflows', JSON.stringify(workflows));
+            localStorage.setItem('work_history', JSON.stringify(workHistory));
+
+            document.getElementById('reassignMsg').innerHTML = `
+                <div class="success">
+                    ✓ Patient reassigned successfully!<br>
+                    <strong>Patient:</strong> ${patient.firstName} ${patient.lastName}<br>
+                    <strong>From:</strong> ${currentDept} → <strong>To:</strong> ${targetDept}<br>
+                    <strong>Assigned to:</strong> ${assignedStaff}<br>
+                    <strong>⚡ Task created automatically in ${targetDept} dashboard!</strong>
+                </div>
+            `;
+
+            document.getElementById('reassignPatientId').value = '';
+            document.getElementById('reassignDept').value = '';
+            document.getElementById('reassignStaff').value = '';
+            document.getElementById('reassignNotes').value = '';
+        }
+
+        function scrollToReassign(patientId) {
+            document.getElementById('reassignPatientId').value = patientId;
+            document.querySelector('[onclick*="switchTab"][onclick*="reassign"]').click();
+            document.getElementById('reassignDept').focus();
+        }
+
+        function searchPatients() {
+            const search = document.getElementById('searchPatient').value.toLowerCase();
+            const deptAssignments = assignments.filter(a => a.targetDept === currentDept);
+            
+            let html = '';
+            deptAssignments.forEach(a => {
+                if (a.patientName.toLowerCase().includes(search) || a.patientId.includes(search)) {
+                    const patient = patients.find(p => p.id === a.patientId);
+                    html += `
+                        <div class="patient-card">
+                            <div class="patient-info">
+                                <h3>${a.patientName}</h3>
+                                <p><strong>ID:</strong> ${a.patientId} | <strong>Phone:</strong> ${patient ? patient.phone : 'N/A'} | <strong>Email:</strong> ${patient ? patient.email : 'N/A'}</p>
+                            </div>
+                            <button class="btn btn-view" onclick="viewPatientDetails('${a.patientId}')" style="margin-top: 10px;">👁️ View Full EMR</button>
+                        </div>
+                    `;
+                }
+            });
+
+            document.getElementById('patientSearchResults').innerHTML = html || '<p style="color: #999;">No patients found</p>';
+        }
+
+        function loadWorkHistory() {
+            const deptHistory = workHistory.filter(h => h.fromDept === currentDept || h.toDept === currentDept);
+            
+            const html = deptHistory.length ? deptHistory.map(h => `
+                <tr>
+                    <td>${h.timestamp}</td>
+                    <td>${h.patientId}</td>
+                    <td>${h.patientName}</td>
+                    <td>${h.fromDept}</td>
+                    <td>${h.toDept}</td>
+                    <td><span class="badge">${h.status}</span></td>
+                    <td>${h.assignedTo}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="7" style="text-align: center; color: #999;">No history</td></tr>';
+            
+            document.getElementById('workHistoryList').innerHTML = html;
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                sessionStorage.clear();
+                window.location.href = '/';
+            }
+        }
+
+        // Load on page load
+        loadAssignedPatients();
+    </script>
+</body>
+</html>

@@ -1,0 +1,135 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Department - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 20px 40px; display: flex; justify-content: space-between; }
+        .logout-btn { background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .patient-card { background: #f8f9fa; padding: 20px; border-left: 4px solid #667eea; margin-bottom: 15px; border-radius: 5px; }
+        .patient-card h3 { color: #333; margin-bottom: 10px; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #d4edda; color: #155724; }
+        .btn { background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn:hover { background: #555dd4; }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+        .stat { background: #f8f9fa; padding: 15px; border-radius: 5px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: bold; color: #667eea; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1 id="deptName">Department Dashboard</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>📥 Patients Assigned to This Department</h2>
+            <div class="stats">
+                <div class="stat">
+                    <div>Assigned to Me</div>
+                    <div class="stat-value" id="totalCount">0</div>
+                </div>
+            </div>
+            <div id="patientsList"></div>
+        </div>
+
+        <div class="section">
+            <h2>🔍 DEBUG INFO</h2>
+            <p>Department checking for: <strong id="deptCheckValue">-</strong></p>
+            <button class="btn" onclick="debugShow()">Show Raw Data</button>
+            <pre id="debugOutput" style="background: #f0f0f0; padding: 10px; margin-top: 10px; max-height: 300px; overflow-y: auto;"></pre>
+        </div>
+    </div>
+
+    <script>
+        // Get department from URL or session
+        const deptName = sessionStorage.getItem('department_name') || 'Department';
+        const urlParams = new URLSearchParams(window.location.search);
+        const deptFromUrl = urlParams.get('dept') || null;
+        
+        document.getElementById('deptName').textContent = deptName + ' Dashboard';
+
+        let assignments = JSON.parse(localStorage.getItem('patient_assignments')) || [];
+        let patients = JSON.parse(localStorage.getItem('reception_patients')) || [];
+
+        // Map department names to check values
+        const deptMap = {
+            'Front Office / Reception': 'Reception',
+            'Outpatient Department (OPD)': 'OPD',
+            'Fertility Consultation Unit': 'Fertility',
+            'IVF & ART Department': 'IVF',
+            'Andrology Laboratory': 'Andrology',
+            'Embryology Laboratory': 'Embryology',
+            'Ultrasound & Imaging Department': 'Ultrasound',
+            'Nursing Department': 'Nursing',
+            'Pharmacy Department': 'Pharmacy',
+            'Finance & Billing Department': 'Finance',
+            'Laboratory (General Diagnostics)': 'Lab',
+            'Counseling & Psychology Unit': 'Counseling',
+            'Cryobank Management': 'Cryobank',
+            'Human Resource Department': 'HR',
+            'Administration & Management': 'Admin'
+        };
+
+        const deptCheckValue = deptMap[deptName] || deptName;
+        document.getElementById('deptCheckValue').textContent = deptCheckValue;
+
+        function loadPatients() {
+            console.log('Looking for dept:', deptCheckValue);
+            console.log('All assignments:', assignments);
+
+            const filtered = assignments.filter(a => {
+                console.log(`Checking: "${a.targetDept}" === "${deptCheckValue}" → ${a.targetDept === deptCheckValue}`);
+                return a.targetDept === deptCheckValue;
+            });
+
+            console.log('Filtered:', filtered);
+
+            if (filtered.length === 0) {
+                document.getElementById('patientsList').innerHTML = '<p style="color: #999; text-align: center; padding: 40px;">No patients assigned to this department yet</p>';
+                document.getElementById('totalCount').textContent = '0';
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(a => {
+                const patient = patients.find(p => p.id === a.patientId);
+                html += `
+                    <div class="patient-card">
+                        <h3>${a.patientName}</h3>
+                        <p><strong>ID:</strong> ${a.patientId}</p>
+                        <p><strong>Phone:</strong> ${patient ? patient.phone : 'N/A'}</p>
+                        <p><strong>Assigned by:</strong> ${a.referredFrom || 'Reception'} on ${a.dateAssigned}</p>
+                        <p><strong>Staff:</strong> ${a.assignedStaff}</p>
+                        <p><strong>Priority:</strong> <span class="badge">${a.priority}</span></p>
+                        <p><strong>Notes:</strong> ${a.notes || 'None'}</p>
+                    </div>
+                `;
+            });
+
+            document.getElementById('patientsList').innerHTML = html;
+            document.getElementById('totalCount').textContent = filtered.length;
+        }
+
+        function debugShow() {
+            document.getElementById('debugOutput').textContent = `Assignments:\n${JSON.stringify(assignments, null, 2)}\n\nLooking for: ${deptCheckValue}`;
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                sessionStorage.clear();
+                window.location.href = '/';
+            }
+        }
+
+        loadPatients();
+    </script>
+</body>
+</html>

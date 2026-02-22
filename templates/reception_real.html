@@ -1,0 +1,304 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reception - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 20px 40px; display: flex; justify-content: space-between; }
+        .logout-btn { background: rgba(255,255,255,0.3); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+        .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .tab-btn { background: #ddd; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .tab-btn.active { background: #667eea; color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .section { background: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .section h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: bold; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; }
+        .btn { background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-success { background: #28a745; }
+        .success { background: #d4edda; color: #155724; padding: 15px; border-radius: 5px; margin-bottom: 15px; border-left: 4px solid #155724; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: bold; }
+        .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; background: #28a745; color: white; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏢 Reception - Patient Registration & Assignment</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="tabs">
+            <button class="tab-btn active" onclick="switchTab(event, 'register')">📝 Register</button>
+            <button class="tab-btn" onclick="switchTab(event, 'assign')">✉️ Assign</button>
+            <button class="tab-btn" onclick="switchTab(event, 'patients')">👥 All Patients</button>
+            <button class="tab-btn" onclick="switchTab(event, 'assignments')">📤 My Assignments</button>
+        </div>
+
+        <!-- Register -->
+        <div id="register" class="tab-content active">
+            <div class="section">
+                <h2>📝 Register New Patient</h2>
+                <div id="regMsg"></div>
+                <form onsubmit="registerPatient(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>First Name *</label>
+                            <input type="text" id="firstName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Last Name *</label>
+                            <input type="text" id="lastName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Email *</label>
+                            <input type="email" id="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Phone *</label>
+                            <input type="text" id="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Age *</label>
+                            <input type="number" id="age" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Gender *</label>
+                            <select id="gender" required>
+                                <option value="">Select</option>
+                                <option value="M">Male</option>
+                                <option value="F">Female</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">✓ Register Patient</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Assign -->
+        <div id="assign" class="tab-content">
+            <div class="section">
+                <h2>✉️ Assign Patient to Department</h2>
+                <div id="assignMsg"></div>
+                <form onsubmit="assignPatient(event)">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div class="form-group">
+                            <label>Select Patient *</label>
+                            <select id="patientSelect" onchange="onPatientSelect()" required>
+                                <option value="">-- SELECT PATIENT --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Select Department *</label>
+                            <select id="deptSelect" required>
+                                <option value="">-- SELECT DEPARTMENT --</option>
+                                <option value="OPD">🏥 OPD</option>
+                                <option value="Fertility">📋 Fertility</option>
+                                <option value="IVF">🏥 IVF</option>
+                                <option value="Andrology">🧬 Andrology</option>
+                                <option value="Embryology">🧫 Embryology</option>
+                                <option value="Ultrasound">🖼️ Ultrasound</option>
+                                <option value="Nursing">👩‍⚕️ Nursing</option>
+                                <option value="Pharmacy">💊 Pharmacy</option>
+                                <option value="Finance">💰 Finance</option>
+                                <option value="Lab">🧪 Lab</option>
+                                <option value="Counseling">💬 Counseling</option>
+                                <option value="Cryobank">❄️ Cryobank</option>
+                                <option value="HR">👥 HR</option>
+                                <option value="Admin">📊 Admin</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Assigned Doctor/Staff *</label>
+                            <input type="text" id="staffName" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Priority</label>
+                            <select id="priority">
+                                <option value="Normal">Normal</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Notes</label>
+                        <textarea id="notes" rows="2"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-success">✉️ ASSIGN PATIENT</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- All Patients -->
+        <div id="patients" class="tab-content">
+            <div class="section">
+                <h2>👥 All Registered Patients</h2>
+                <table>
+                    <thead>
+                        <tr><th>ID</th><th>Name</th><th>Phone</th><th>Email</th></tr>
+                    </thead>
+                    <tbody id="patientsList"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Assignments -->
+        <div id="assignments" class="tab-content">
+            <div class="section">
+                <h2>📤 My Assignments (Sent Patients)</h2>
+                <div id="assignmentsList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let patients = JSON.parse(localStorage.getItem('reception_patients')) || [];
+        let assignments = JSON.parse(localStorage.getItem('patient_assignments')) || [];
+
+        function switchTab(e, tabId) {
+            e.preventDefault();
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            e.target.classList.add('active');
+            if (tabId === 'patients') loadPatients();
+            if (tabId === 'assign') loadForAssign();
+            if (tabId === 'assignments') loadAssignments();
+        }
+
+        function registerPatient(e) {
+            e.preventDefault();
+            const patient = {
+                id: 'P' + Date.now(),
+                firstName: document.getElementById('firstName').value,
+                lastName: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                age: document.getElementById('age').value,
+                gender: document.getElementById('gender').value,
+                registrationDate: new Date().toLocaleDateString()
+            };
+            
+            patients.push(patient);
+            localStorage.setItem('reception_patients', JSON.stringify(patients));
+            
+            document.getElementById('regMsg').innerHTML = `
+                <div class="success">
+                    ✓ Patient registered!<br>
+                    <strong>ID:</strong> ${patient.id} | <strong>Name:</strong> ${patient.firstName} ${patient.lastName}<br>
+                    Next: Go to "Assign" tab to send to a department
+                </div>
+            `;
+            document.getElementById('firstName').value = '';
+            document.getElementById('lastName').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('phone').value = '';
+            document.getElementById('age').value = '';
+        }
+
+        function loadForAssign() {
+            patients = JSON.parse(localStorage.getItem('reception_patients')) || [];
+            let options = '<option value="">-- SELECT PATIENT --</option>';
+            patients.forEach(p => {
+                options += `<option value="${p.id}|${p.firstName} ${p.lastName}">${p.firstName} ${p.lastName} (${p.id})</option>`;
+            });
+            document.getElementById('patientSelect').innerHTML = options;
+        }
+
+        function onPatientSelect() {
+            // Patient selected, auto-fill staff name field
+            document.getElementById('staffName').focus();
+        }
+
+        function assignPatient(e) {
+            e.preventDefault();
+            
+            const patientData = document.getElementById('patientSelect').value.split('|');
+            const patientId = patientData[0];
+            const patientName = patientData[1];
+            const deptSelect = document.getElementById('deptSelect').value;
+            const staffName = document.getElementById('staffName').value;
+            const priority = document.getElementById('priority').value;
+            const notes = document.getElementById('notes').value;
+
+            console.log('ASSIGNING:', {patientId, patientName, deptSelect, staffName});
+
+            const assignment = {
+                id: 'ASN-' + Date.now(),
+                patientId: patientId,
+                patientName: patientName,
+                targetDept: deptSelect,  // THIS IS THE KEY VALUE
+                assignedStaff: staffName,
+                priority: priority,
+                notes: notes,
+                dateAssigned: new Date().toLocaleString(),
+                status: 'Assigned'
+            };
+
+            assignments.push(assignment);
+            localStorage.setItem('patient_assignments', JSON.stringify(assignments));
+
+            document.getElementById('assignMsg').innerHTML = `
+                <div class="success">
+                    ✅ PATIENT ASSIGNED!<br>
+                    <strong>Patient:</strong> ${patientName} (${patientId})<br>
+                    <strong>SENT TO:</strong> <span class="badge">${deptSelect}</span><br>
+                    <strong>Doctor:</strong> ${staffName}<br>
+                    <strong>⚡ They can now see this patient in their dashboard!</strong>
+                </div>
+            `;
+
+            document.getElementById('patientSelect').value = '';
+            document.getElementById('deptSelect').value = '';
+            document.getElementById('staffName').value = '';
+            document.getElementById('notes').value = '';
+        }
+
+        function loadPatients() {
+            patients = JSON.parse(localStorage.getItem('reception_patients')) || [];
+            const html = patients.map(p => `
+                <tr>
+                    <td>${p.id}</td>
+                    <td>${p.firstName} ${p.lastName}</td>
+                    <td>${p.phone}</td>
+                    <td>${p.email}</td>
+                </tr>
+            `).join('');
+            document.getElementById('patientsList').innerHTML = html || '<tr><td colspan="4">No patients</td></tr>';
+        }
+
+        function loadAssignments() {
+            assignments = JSON.parse(localStorage.getItem('patient_assignments')) || [];
+            let html = '';
+            assignments.forEach(a => {
+                html += `
+                    <div style="background: #f8f9fa; padding: 15px; border-left: 4px solid #28a745; margin-bottom: 10px; border-radius: 5px;">
+                        <strong>${a.patientName}</strong> → <span class="badge">${a.targetDept}</span><br>
+                        <small>Assigned to ${a.assignedStaff} on ${a.dateAssigned}</small>
+                    </div>
+                `;
+            });
+            document.getElementById('assignmentsList').innerHTML = html || '<p>No assignments</p>';
+        }
+
+        function logout() {
+            if (confirm('Logout?')) {
+                sessionStorage.clear();
+                window.location.href = '/';
+            }
+        }
+
+        loadForAssign();
+    </script>
+</body>
+</html>

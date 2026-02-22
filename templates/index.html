@@ -1,0 +1,136 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TFICMS - Home</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .navbar { background: rgba(0,0,0,0.2); color: white; padding: 20px 40px; }
+        .navbar h1 { margin: 0; font-size: 28px; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .header { text-align: center; color: white; margin-bottom: 50px; }
+        .header h1 { font-size: 40px; margin-bottom: 10px; }
+        .header p { font-size: 16px; opacity: 0.9; }
+        .admin-banner { background: rgba(44, 62, 80, 0.9); color: white; padding: 20px; border-radius: 10px; margin-bottom: 40px; text-align: center; }
+        .admin-banner strong { font-size: 18px; }
+        .departments-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+        .dept-card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); text-align: center; cursor: pointer; transition: transform 0.3s, box-shadow 0.3s; text-decoration: none; color: inherit; display: block; }
+        .dept-card:hover { transform: translateY(-5px); box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .dept-card.admin-card { border: 3px solid #2c3e50; background: linear-gradient(135deg, #ecf0f1, #bdc3c7); }
+        .dept-icon { font-size: 40px; margin-bottom: 10px; }
+        .dept-name { color: #333; font-weight: bold; margin-bottom: 5px; }
+        .dept-name.admin { color: #2c3e50; font-size: 18px; }
+        .dept-desc { color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>🏥 TFICMS - Select a Department</h1>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Tunajali Fertility & IVF Clinic</h1>
+            <p>Clinical Management System - All Departments</p>
+        </div>
+
+        <div class="admin-banner">
+            <strong>👨‍💼 ADMIN PANEL</strong> - System Management, Reporting & Analytics
+        </div>
+
+        <div class="departments-grid">
+            <a href="/admin_panel/" class="dept-card admin-card">
+                <div class="dept-icon">📊</div>
+                <div class="dept-name admin">ADMIN DASHBOARD</div>
+                <div class="dept-desc">System Overview, Reports & Settings</div>
+            </a>
+
+            <a href="/reception/" class="dept-card">
+                <div class="dept-icon">🏢</div>
+                <div class="dept-name">Reception</div>
+                <div class="dept-desc">Patient Registration</div>
+            </a>
+
+            <a href="/opd/" class="dept-card">
+                <div class="dept-icon">🏥</div>
+                <div class="dept-name">OPD</div>
+                <div class="dept-desc">Doctor Consultation</div>
+            </a>
+
+            <a href="/fertility/" class="dept-card">
+                <div class="dept-icon">📋</div>
+                <div class="dept-name">Fertility</div>
+                <div class="dept-desc">Fertility Consultation</div>
+            </a>
+
+            <a href="/ivf/" class="dept-card">
+                <div class="dept-icon">🏥</div>
+                <div class="dept-name">IVF</div>
+                <div class="dept-desc">IVF & ART Department</div>
+            </a>
+
+            <a href="/pharmacy/" class="dept-card">
+                <div class="dept-icon">💊</div>
+                <div class="dept-name">Pharmacy</div>
+                <div class="dept-desc">Medication Dispensing</div>
+            </a>
+
+            <a href="/lab/" class="dept-card">
+                <div class="dept-icon">🧪</div>
+                <div class="dept-name">Lab</div>
+                <div class="dept-desc">General Laboratory</div>
+            </a>
+
+            <a href="/andrology/" class="dept-card">
+                <div class="dept-icon">🧬</div>
+                <div class="dept-name">Andrology</div>
+                <div class="dept-desc">Andrology Laboratory</div>
+            </a>
+
+            <a href="/embryology/" class="dept-card">
+                <div class="dept-icon">🧫</div>
+                <div class="dept-name">Embryology</div>
+                <div class="dept-desc">Embryo Processing</div>
+            </a>
+
+            <a href="/ultrasound/" class="dept-card">
+                <div class="dept-icon">🖼️</div>
+                <div class="dept-name">Ultrasound</div>
+                <div class="dept-desc">Ultrasound & Imaging</div>
+            </a>
+
+            <a href="/nursing/" class="dept-card">
+                <div class="dept-icon">👩‍⚕️</div>
+                <div class="dept-name">Nursing</div>
+                <div class="dept-desc">Nursing Department</div>
+            </a>
+
+            <a href="/counseling/" class="dept-card">
+                <div class="dept-icon">💬</div>
+                <div class="dept-name">Counseling</div>
+                <div class="dept-desc">Counseling & Psychology</div>
+            </a>
+
+            <a href="/finance/" class="dept-card">
+                <div class="dept-icon">💰</div>
+                <div class="dept-name">Finance</div>
+                <div class="dept-desc">Billing & Payments</div>
+            </a>
+
+            <a href="/cryobank/" class="dept-card">
+                <div class="dept-icon">❄️</div>
+                <div class="dept-name">Cryobank</div>
+                <div class="dept-desc">Embryo Storage</div>
+            </a>
+
+            <a href="/hr/" class="dept-card">
+                <div class="dept-icon">👥</div>
+                <div class="dept-name">HR</div>
+                <div class="dept-desc">Human Resources</div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

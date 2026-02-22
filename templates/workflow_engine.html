@@ -1,0 +1,102 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow Engine - TFICMS</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; background: #f5f5f5; }
+        .navbar { background: #667eea; color: white; padding: 20px 40px; display: flex; justify-content: space-between; }
+        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+        .section { background: white; padding: 30px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { color: #333; margin-bottom: 20px; border-bottom: 2px solid #667eea; padding-bottom: 10px; }
+        .task-card { background: #f8f9fa; padding: 20px; border-left: 4px solid #667eea; margin-bottom: 15px; border-radius: 5px; }
+        .task-title { font-weight: bold; color: #333; }
+        .task-status { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; margin-top: 10px; }
+        .status-waiting { background: #fff3cd; color: #856404; }
+        .status-progress { background: #d1ecf1; color: #0c5460; }
+        .status-completed { background: #d4edda; color: #155724; }
+        .status-referred { background: #e2e3e5; color: #383d41; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background: #f8f9fa; font-weight: bold; }
+        .btn { background: #667eea; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <h1>⚙️ Workflow Engine - Patient Movement System</h1>
+    </div>
+
+    <div class="container">
+        <div class="section">
+            <h2>🔄 Active Patient Workflows</h2>
+            <p style="color: #666; margin-bottom: 20px;">Real-time tracking of all patient movements through departments</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Patient ID</th>
+                        <th>Patient Name</th>
+                        <th>Current Department</th>
+                        <th>Current Task</th>
+                        <th>Status</th>
+                        <th>Last Updated</th>
+                        <th>Assigned To</th>
+                    </tr>
+                </thead>
+                <tbody id="workflowList">
+                    <tr><td colspan="7" style="text-align: center; color: #999;">Loading patient workflows...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2>📋 Workflow Tasks Queue</h2>
+            <div id="taskQueue"></div>
+        </div>
+
+        <div class="section">
+            <h2>📊 Workflow Statistics</h2>
+            <table>
+                <tr>
+                    <td><strong>Total Active Patients:</strong> <span id="totalPatients">0</span></td>
+                    <td><strong>Pending Tasks:</strong> <span id="pendingTasks">0</span></td>
+                    <td><strong>In Progress:</strong> <span id="inProgress">0</span></td>
+                    <td><strong>Completed:</strong> <span id="completed">0</span></td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function loadWorkflows() {
+            const workflows = JSON.parse(localStorage.getItem('patient_workflows')) || [];
+            const html = workflows.length ? workflows.map(w => `
+                <tr>
+                    <td>${w.patientId}</td>
+                    <td>${w.patientName}</td>
+                    <td>${w.currentDept}</td>
+                    <td>${w.currentTask}</td>
+                    <td><span class="task-status status-${w.status.toLowerCase().replace(/ /g, '-')}">${w.status}</span></td>
+                    <td>${w.lastUpdated}</td>
+                    <td>${w.assignedTo}</td>
+                </tr>
+            `).join('') : '<tr><td colspan="7" style="text-align: center; color: #999;">No active workflows</td></tr>';
+            document.getElementById('workflowList').innerHTML = html;
+
+            const waitingCount = workflows.filter(w => w.status === 'Waiting').length;
+            const progressCount = workflows.filter(w => w.status === 'In Progress').length;
+            const completedCount = workflows.filter(w => w.status === 'Completed').length;
+
+            document.getElementById('totalPatients').textContent = workflows.length;
+            document.getElementById('pendingTasks').textContent = waitingCount;
+            document.getElementById('inProgress').textContent = progressCount;
+            document.getElementById('completed').textContent = completedCount;
+        }
+
+        setInterval(loadWorkflows, 5000);
+        loadWorkflows();
+    </script>
+</body>
+</html>

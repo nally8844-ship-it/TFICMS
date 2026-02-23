@@ -1,133 +1,25 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard - TFICMS</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; }
-        .navbar { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px 40px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); }
-        .navbar h1 { font-size: 24px; }
-        .navbar-right { display: flex; gap: 20px; align-items: center; }
-        .nav-links { display: flex; gap: 15px; flex-wrap: wrap; }
-        .nav-links a { color: white; text-decoration: none; padding: 8px 16px; border-radius: 5px; transition: background 0.3s; font-size: 13px; }
-        .nav-links a:hover { background: rgba(255, 255, 255, 0.2); }
-        .user-info { font-size: 14px; }
-        .logout-btn { background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid white; padding: 8px 16px; border-radius: 5px; cursor: pointer; }
-        .logout-btn:hover { background: rgba(255, 255, 255, 0.3); }
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-        .dashboard-header { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); margin-bottom: 30px; }
-        .dashboard-header h2 { color: #333; margin-bottom: 10px; }
-        .dashboard-header p { color: #666; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; }
-        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); transition: transform 0.2s, box-shadow 0.2s; text-decoration: none; color: inherit; display: block; cursor: pointer; }
-        .card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15); }
-        .icon { font-size: 40px; margin-bottom: 10px; }
-        .card h3 { color: #333; margin-bottom: 10px; }
-        .card p { color: #666; font-size: 14px; }
-        .card-link { display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-size: 14px; margin-top: 15px; transition: transform 0.2s; }
-        .card-link:hover { transform: scale(1.05); }
-    </style>
+    <title>Department Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="navbar">
-        <h1>🏥 TFICMS Admin Dashboard</h1>
-        <div class="navbar-right">
-            <div class="nav-links">
-                <a href="/dashboard/">Dashboard</a>
-                <a href="/users/">Users</a>
-                <a href="/patients/">Patients</a>
-                <a href="/appointments/">Appointments</a>
-                <a href="/staff/">Staff</a>
-                <a href="/reports/">Reports</a>
-                <a href="/finance/">Finance</a>
-                <a href="/settings/">Settings</a>
-            </div>
-            <div class="user-info">
-                Welcome, <strong id="username">Admin</strong>
-            </div>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </div>
-    </div>
-
-    <div class="container">
-        <div class="dashboard-header">
-            <h2>Welcome to Admin Dashboard</h2>
-            <p>Manage your fertility clinic operations from here</p>
-        </div>
-
-        <div class="grid">
-            <a href="/patients/" class="card">
-                <div class="icon">👥</div>
-                <h3>Patients</h3>
-                <p>Manage patient records and information</p>
-                <span class="card-link">View Patients</span>
-            </a>
-
-            <a href="/appointments/" class="card">
-                <div class="icon">📅</div>
-                <h3>Appointments</h3>
-                <p>Schedule and manage appointments</p>
-                <span class="card-link">View Appointments</span>
-            </a>
-
-            <a href="/staff/" class="card">
-                <div class="icon">👨‍⚕️</div>
-                <h3>Staff</h3>
-                <p>Manage staff and doctors</p>
-                <span class="card-link">View Staff</span>
-            </a>
-
-            <a href="/reports/" class="card">
-                <div class="icon">📊</div>
-                <h3>Reports</h3>
-                <p>View reports and analytics</p>
-                <span class="card-link">View Reports</span>
-            </a>
-
-            <a href="/finance/" class="card">
-                <div class="icon">💰</div>
-                <h3>Finance</h3>
-                <p>Track financial transactions</p>
-                <span class="card-link">View Finance</span>
-            </a>
-
-            <a href="/settings/" class="card">
-                <div class="icon">⚙️</div>
-                <h3>Settings</h3>
-                <p>Configure system settings</p>
-                <span class="card-link">Go to Settings</span>
-            </a>
-        </div>
-    </div>
-
-    <script>
-        async function loadUserInfo() {
-            try {
-                const response = await fetch('/api/user/');
-                const data = await response.json();
-                if (data.success) {
-                    document.getElementById('username').textContent = data.username;
-                }
-            } catch (error) {
-                console.log('Could not load user info');
-            }
-        }
-
-        async function logout() {
-            try {
-                const response = await fetch('/api/logout/', { method: 'POST' });
-                const data = await response.json();
-                if (data.success) {
-                    window.location.href = '/';
-                }
-            } catch (error) {
-                alert('Logout failed');
-            }
-        }
-
-        loadUserInfo();
-    </script>
+    <header>
+        <h1>Department Dashboard</h1>
+    </header>
+    <main>
+        <section id="patient-list">
+            <h2>Patient List</h2>
+            <ul>
+                <li>Patient 1</li>
+                <li>Patient 2</li>
+                <li>Patient 3</li>
+                <!-- Additional patients can be added here -->
+            </ul>
+        </section>
+    </main>
 </body>
 </html>
